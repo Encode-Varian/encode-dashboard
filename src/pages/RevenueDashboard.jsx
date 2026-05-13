@@ -76,6 +76,16 @@ function formatDateKey(date) {
   return `${y}-${m}-${d}`;
 }
 
+function getFirstDayOfCurrentMonth() {
+  const today = new Date();
+  return new Date(today.getFullYear(), today.getMonth(), 1);
+}
+
+function getLastDayOfCurrentMonth() {
+  const today = new Date();
+  return new Date(today.getFullYear(), today.getMonth() + 1, 0);
+}
+
 function monthKey(date) {
   if (!date) return "Unknown";
 
@@ -372,11 +382,8 @@ export default function RevenueDashboard() {
 
     setFileName(loadedFileNames);
 
-    if (normalized.length) {
-      const dates = normalized.map((row) => row.date).sort((a, b) => a - b);
-      setStartDate(formatDateKey(dates[0]));
-      setEndDate(formatDateKey(dates[dates.length - 1]));
-    }
+    setStartDate(formatDateKey(getFirstDayOfCurrentMonth()));
+    setEndDate(formatDateKey(getLastDayOfCurrentMonth()));
   }, []);
 
   async function handleDownloadPdf() {
