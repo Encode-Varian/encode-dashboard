@@ -19,6 +19,12 @@ import {
   Repeat,
   TrendingUp,
   Percent,
+  Search,
+  DollarSign,
+  CalendarDays,
+  BookOpen,
+  UserCheck,
+  Target,
 } from "lucide-react";
 
 const BRAND_PRIMARY = "#53C8E0";
@@ -57,6 +63,8 @@ function parseDate(value) {
   if (slashParts.length === 3) {
     const [a, b, c] = slashParts;
     const year = c.length === 2 ? `20${c}` : c;
+
+    // Assumes Schooltracs usually exports DD/MM/YYYY.
     const d = new Date(Number(year), Number(b) - 1, Number(a));
     return Number.isNaN(d.getTime()) ? null : d;
   }
@@ -67,21 +75,26 @@ function parseDate(value) {
 
 function formatDateKey(date) {
   if (!date) return "Unknown";
+
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, "0");
   const d = String(date.getDate()).padStart(2, "0");
+
   return `${y}-${m}-${d}`;
 }
 
 function monthKey(date) {
   if (!date) return "Unknown";
+
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, "0");
+
   return `${y}-${m}`;
 }
 
 function formatMonthLabel(key) {
   if (!key || key === "Unknown") return "Unknown";
+
   const [year, month] = key.split("-").map(Number);
   const d = new Date(year, month - 1, 1);
 
@@ -94,6 +107,7 @@ function formatMonthLabel(key) {
 function getPreviousMonthKey(currentMonthKey) {
   const [year, month] = currentMonthKey.split("-").map(Number);
   const d = new Date(year, month - 2, 1);
+
   return monthKey(d);
 }
 
@@ -196,15 +210,18 @@ function buildStudentMap(rows) {
         courseNames: new Map(),
         courseLevels: new Map(),
         staff: new Map(),
-      });
+        weekdays: new Map(),
+      }); 
     }
 
     const student = map.get(row.studentNumber);
+
     student.revenue += row.paid;
     student.paidLessons += 1;
     student.courseNames.set(row.courseName, (student.courseNames.get(row.courseName) || 0) + 1);
     student.courseLevels.set(row.courseLevel, (student.courseLevels.get(row.courseLevel) || 0) + 1);
     student.staff.set(row.staff, (student.staff.get(row.staff) || 0) + 1);
+    student.weekdays.set(row.weekday, (student.weekdays.get(row.weekday) || 0) + 1);
   });
 
   return map;
@@ -238,10 +255,15 @@ function compareStudentMaps(currentMap, previousMap, allHistoryMap, currentKey, 
 
     const source = current || previous;
 
+    const totalPaidRevenue = history?.totalPaidRevenue || 0;
+    const totalPaidLessons = history?.totalPaidLessons || 0;
+
     return {
       studentNumber,
       studentName: source?.studentName || studentNumber,
       status,
+      totalPaidRevenue,
+      totalPaidLessons,
       currentRevenue: current?.revenue || 0,
       previousRevenue: previous?.revenue || 0,
       currentPaidLessons: current?.paidLessons || 0,
@@ -256,9 +278,14 @@ function compareStudentMaps(currentMap, previousMap, allHistoryMap, currentKey, 
         : previous
           ? getMainValue(previous.courseLevels)
           : "—",
-      staff: current ? getMainValue(current.staff) : previous ? getMainValue(previous.staff) : "—",
-      firstActivePeriod: history?.firstPeriod || "—",
-      lastActivePeriod: history?.lastPeriod || "—",
+    staff: current ? getMainValue(current.staff) : previous ? getMainValue(previous.staff) : "—",
+    usualWeekday: current
+    ? getMainValue(current.weekdays)
+    : previous
+        ? getMainValue(previous.weekdays)
+        : "—",
+    firstActivePeriod: history?.firstPeriod || "—",
+    lastActivePeriod: history?.lastPeriod || "—",
     };
   });
 
@@ -272,7 +299,10 @@ function compareStudentMaps(currentMap, previousMap, allHistoryMap, currentKey, 
   const retentionRate = previousActiveStudents ? stayed / previousActiveStudents : 0;
   const netChange = newStudents + returned - lost;
 
-  const revenue = Array.from(currentMap.values()).reduce((sum, student) => sum + student.revenue, 0);
+  const revenue = Array.from(currentMap.values()).reduce(
+    (sum, student) => sum + student.revenue,
+    0
+  );
 
   return {
     activeStudents,
@@ -286,6 +316,97 @@ function compareStudentMaps(currentMap, previousMap, allHistoryMap, currentKey, 
     revenue,
     detailRows,
   };
+}
+
+function getSortableValue(row, key) {
+  const value = row[key];
+
+  if (value === null || value === undefined) return "";
+  if (typeof value === "number") return value;
+
+  return String(value).toLowerCase();
+}
+
+function sortRows(rows, sortConfig) {
+  if (!sortConfig?.key) return rows;
+
+  const statusOrder = {
+    "Lost / Not Active": 1,
+    New: 2,
+    Returned: 3,
+    Stayed: 4,
+    Unknown: 5,
+  };
+
+  return [...rows].sort((a, b) => {
+    let aValue = getSortableValue(a, sortConfig.key);
+    let bValue = getSortableValue(b, sortConfig.key);
+
+    if (sortConfig.key === "status") {
+      aValue = statusOrder[a.status] || 99;
+      bValue = statusOrder[b.status] || 99;
+    }
+
+    if (aValue < bValue) {
+      return sortConfig.direction === "asc" ? -1 : 1;
+    }
+
+    if (aValue > bValue) {
+      return sortConfig.direction === "asc" ? 1 : -1;
+    }
+
+    return 0;
+  });
+}
+
+function getSuggestedAction(profile) {
+  if (!profile) return "";
+
+  if (profile.status === "Lost / Not Active") {
+    return "Hannah follow-up: check renewal intention, schedule conflict, or interest drop.";
+  }
+
+  if (profile.status === "New") {
+    return "New student care: ensure parent receives early progress feedback.";
+  }
+
+  if (profile.status === "Returned") {
+    return "Retention opportunity: understand why the student returned and reinforce the pathway.";
+  }
+
+  if (profile.status === "Stayed" && profile.currentRevenue > profile.previousRevenue) {
+    return "Healthy growth: maintain relationship and consider next-level / competition pathway.";
+  }
+
+  if (profile.status === "Stayed" && profile.currentRevenue < profile.previousRevenue) {
+    return "Monitor: student stayed but revenue or lesson volume dropped.";
+  }
+
+  return "Normal retention: continue regular parent communication.";
+}
+
+function getProfileNarrative(profile, viewMode) {
+  if (!profile) return "";
+
+  const periodType = viewMode === "Term-by-Term" ? "term" : "month";
+
+  if (profile.status === "Lost / Not Active") {
+    return `This student was active in the previous ${periodType}, but has no paid regular lesson in the current ${periodType}.`;
+  }
+
+  if (profile.status === "New") {
+    return `This student appears for the first time in the uploaded paid regular lesson records for this ${periodType}.`;
+  }
+
+  if (profile.status === "Returned") {
+    return `This student was not active in the previous ${periodType}, but has returned in the current ${periodType}.`;
+  }
+
+  if (profile.status === "Stayed") {
+    return `This student was active in both the previous and current ${periodType}.`;
+  }
+
+  return "No clear movement pattern detected.";
 }
 
 function KpiCard({ title, value, subtitle, icon: Icon }) {
@@ -306,6 +427,130 @@ function KpiCard({ title, value, subtitle, icon: Icon }) {
   );
 }
 
+function ProfileMetric({ label, value, icon: Icon }) {
+  return (
+    <div className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</p>
+          <p className="mt-2 text-lg font-bold text-slate-900">{value}</p>
+        </div>
+
+        {Icon && (
+          <div className="rounded-xl bg-[#53C8E0]/15 p-2 text-[#0E8FA4]">
+            <Icon size={18} />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function StudentMiniProfile({ profile, viewMode, onClose }) {
+  if (!profile) {
+    return (
+      <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-6 text-center text-slate-500 shadow-sm">
+        Click a student row to view a mini profile.
+      </div>
+    );
+  }
+
+  const revenueChange = profile.currentRevenue - profile.previousRevenue;
+  const lessonChange = profile.currentPaidLessons - profile.previousPaidLessons;
+
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+        <div>
+          <p className="text-sm font-medium text-slate-500">Selected Student</p>
+          <h3 className="mt-1 text-2xl font-bold text-slate-900">{profile.studentName}</h3>
+          <p className="mt-1 text-sm text-slate-500">Student Number: {profile.studentNumber}</p>
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          <span className="rounded-full bg-[#53C8E0]/15 px-4 py-2 text-sm font-bold text-[#0E8FA4]">
+            {profile.status}
+          </span>
+
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-500 hover:bg-slate-50"
+          >
+            Clear
+          </button>
+        </div>
+      </div>
+
+      <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <ProfileMetric
+          label="Total Paid Revenue"
+          value={formatHKD(profile.totalPaidRevenue)}
+          icon={DollarSign}
+        />
+
+        <ProfileMetric
+          label="Total Paid Lessons"
+          value={profile.totalPaidLessons.toLocaleString()}
+          icon={CalendarDays}
+        />
+
+        <ProfileMetric
+          label="Current Period Revenue"
+          value={formatHKD(profile.currentRevenue)}
+          icon={DollarSign}
+        />
+
+        <ProfileMetric
+          label="Previous Period Revenue"
+          value={formatHKD(profile.previousRevenue)}
+          icon={DollarSign}
+        />
+      </div>
+
+      <div className="mt-4 grid gap-4 md:grid-cols-2">
+        <ProfileMetric
+          label="Revenue Change"
+          value={revenueChange >= 0 ? `+${formatHKD(revenueChange)}` : formatHKD(revenueChange)}
+          icon={TrendingUp}
+        />
+
+        <ProfileMetric
+          label="Lesson Change"
+          value={lessonChange >= 0 ? `+${lessonChange}` : lessonChange}
+          icon={CalendarDays}
+        />
+      </div>
+
+      <div className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+        <ProfileMetric label="Course Name" value={profile.courseName} icon={BookOpen} />
+        <ProfileMetric label="Course Level" value={profile.courseLevel} icon={Target} />
+        <ProfileMetric label="Main Staff" value={profile.staff} icon={UserCheck} />
+        <ProfileMetric label="Usual Lesson Day" value={profile.usualWeekday || "—"} icon={CalendarDays} />
+        <ProfileMetric
+            label="Active Periods"
+            value={`${profile.firstActivePeriod} → ${profile.lastActivePeriod}`}
+            icon={Repeat}
+            />
+      </div>
+
+      <div className="mt-6 grid gap-4 lg:grid-cols-2">
+        <div className="rounded-2xl bg-slate-50 p-5">
+          <p className="text-sm font-bold text-slate-900">Interpretation</p>
+          <p className="mt-2 text-sm leading-6 text-slate-600">
+            {getProfileNarrative(profile, viewMode)}
+          </p>
+        </div>
+
+        <div className="rounded-2xl bg-[#F7941D]/10 p-5">
+          <p className="text-sm font-bold text-slate-900">Suggested Action</p>
+          <p className="mt-2 text-sm leading-6 text-slate-700">{getSuggestedAction(profile)}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ChartCard({ title, children }) {
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -315,7 +560,20 @@ function ChartCard({ title, children }) {
   );
 }
 
-function TopTable({ title, rows, columns }) {
+function SortableStudentTable({
+  title,
+  rows,
+  columns,
+  sortConfig,
+  onSort,
+  selectedStudentNumber,
+  onRowClick,
+}) {
+  function getSortIndicator(key) {
+    if (sortConfig.key !== key) return "↕";
+    return sortConfig.direction === "asc" ? "↑" : "↓";
+  }
+
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
       <h3 className="mb-4 text-lg font-bold text-slate-900">{title}</h3>
@@ -326,7 +584,18 @@ function TopTable({ title, rows, columns }) {
             <tr className="border-b border-slate-200 text-slate-500">
               {columns.map((col) => (
                 <th key={col.key} className="px-3 py-3 font-semibold">
-                  {col.label}
+                  {col.sortable === false ? (
+                    col.label
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => onSort(col.key)}
+                      className="flex items-center gap-2 text-left font-semibold text-slate-500 hover:text-slate-900"
+                    >
+                      <span>{col.label}</span>
+                      <span className="text-xs">{getSortIndicator(col.key)}</span>
+                    </button>
+                  )}
                 </th>
               ))}
             </tr>
@@ -340,22 +609,33 @@ function TopTable({ title, rows, columns }) {
                 </td>
               </tr>
             ) : (
-              rows.map((row, index) => (
-                <tr
-                  key={`${row.studentNumber || row.key || "row"}-${index}`}
-                  className="border-b border-slate-100 last:border-0"
-                >
-                  {columns.map((col) => (
-                    <td key={col.key} className="px-3 py-3 text-slate-700">
-                      {col.render ? col.render(row, index) : row[col.key]}
-                    </td>
-                  ))}
-                </tr>
-              ))
+              rows.map((row, index) => {
+                const isSelected = row.studentNumber === selectedStudentNumber;
+
+                return (
+                  <tr
+                    key={`${row.studentNumber || row.key || "row"}-${index}`}
+                    onClick={() => onRowClick(row)}
+                    className={`cursor-pointer border-b border-slate-100 transition last:border-0 ${
+                      isSelected ? "bg-[#53C8E0]/10" : "hover:bg-slate-50"
+                    }`}
+                  >
+                    {columns.map((col) => (
+                      <td key={col.key} className="px-3 py-3 text-slate-700">
+                        {col.render ? col.render(row, index) : row[col.key]}
+                      </td>
+                    ))}
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>
       </div>
+
+      <p className="mt-3 text-xs text-slate-400">
+        Click a column heading to sort. Click a student row to view the mini profile.
+      </p>
     </div>
   );
 }
@@ -367,6 +647,12 @@ export default function StudentRetentionDashboard() {
   const [selectedTerm, setSelectedTerm] = useState("");
   const [selectedMonth, setSelectedMonth] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("All");
+  const [searchText, setSearchText] = useState("");
+  const [selectedStudentNumber, setSelectedStudentNumber] = useState("");
+  const [sortConfig, setSortConfig] = useState({
+    key: "status",
+    direction: "asc",
+  });
 
   useEffect(() => {
     const entries = Object.entries(schooltracsCsvFiles);
@@ -421,6 +707,10 @@ export default function StudentRetentionDashboard() {
     }
   }, []);
 
+  useEffect(() => {
+    setSelectedStudentNumber("");
+  }, [viewMode, selectedTerm, selectedMonth, selectedStatus, searchText]);
+
   const paidRegularRows = useMemo(() => rows.filter(isPaidRegular), [rows]);
 
   const availableMonths = useMemo(() => {
@@ -434,8 +724,6 @@ export default function StudentRetentionDashboard() {
   const selectedTermPreset = useMemo(() => {
     return termRanges.find((term) => term.termName === selectedTerm);
   }, [termRanges, selectedTerm]);
-
-  const previousTermName = selectedTermPreset?.previousTerm || "";
 
   const termStudentMaps = useMemo(() => {
     const map = new Map();
@@ -462,11 +750,15 @@ export default function StudentRetentionDashboard() {
             periods: new Set(),
             firstPeriod: termName,
             lastPeriod: termName,
+            totalPaidRevenue: 0,
+            totalPaidLessons: 0,
           });
         }
 
         const item = map.get(studentNumber);
         item.periods.add(termName);
+        item.totalPaidRevenue += student.revenue;
+        item.totalPaidLessons += student.paidLessons;
 
         if (termName < item.firstPeriod) item.firstPeriod = termName;
         if (termName > item.lastPeriod) item.lastPeriod = termName;
@@ -480,6 +772,7 @@ export default function StudentRetentionDashboard() {
     return termNames.map((termName) => {
       const termPreset = termRanges.find((term) => term.termName === termName);
       const previousName = termPreset?.previousTerm || "";
+
       const currentMap = termStudentMaps.get(termName) || new Map();
       const previousMap = previousName ? termStudentMaps.get(previousName) || new Map() : new Map();
 
@@ -524,11 +817,15 @@ export default function StudentRetentionDashboard() {
             periods: new Set(),
             firstPeriod: month,
             lastPeriod: month,
+            totalPaidRevenue: 0,
+            totalPaidLessons: 0,
           });
         }
 
         const item = map.get(studentNumber);
         item.periods.add(month);
+        item.totalPaidRevenue += student.revenue;
+        item.totalPaidLessons += student.paidLessons;
 
         if (month < item.firstPeriod) item.firstPeriod = month;
         if (month > item.lastPeriod) item.lastPeriod = month;
@@ -541,6 +838,7 @@ export default function StudentRetentionDashboard() {
   const monthlyFlowRows = useMemo(() => {
     return availableMonths.map((currentMonth) => {
       const previousMonth = getPreviousMonthKey(currentMonth);
+
       const currentMap = monthStudentMaps.get(currentMonth) || new Map();
       const previousMap = monthStudentMaps.get(previousMonth) || new Map();
 
@@ -573,18 +871,39 @@ export default function StudentRetentionDashboard() {
   const filteredStudentRows = useMemo(() => {
     if (!selectedFlow) return [];
 
-    if (selectedStatus === "All") {
-        return selectedFlow.detailRows;
-    }
+    let result = selectedFlow.detailRows;
 
     if (selectedStatus === "New / Returned") {
-        return selectedFlow.detailRows.filter(
-        (row) => row.status === "New" || row.status === "Returned"
-        );
+      result = result.filter((row) => row.status === "New" || row.status === "Returned");
+    } else if (selectedStatus !== "All") {
+      result = result.filter((row) => row.status === selectedStatus);
     }
 
-    return selectedFlow.detailRows.filter((row) => row.status === selectedStatus);
-  }, [selectedFlow, selectedStatus]);
+    if (searchText.trim()) {
+      const query = searchText.toLowerCase();
+
+      result = result.filter((row) => {
+        return (
+          String(row.studentName || "").toLowerCase().includes(query) ||
+          String(row.studentNumber || "").toLowerCase().includes(query) ||
+          String(row.courseName || "").toLowerCase().includes(query) ||
+          String(row.courseLevel || "").toLowerCase().includes(query) ||
+          String(row.staff || "").toLowerCase().includes(query) ||
+          String(row.usualWeekday || "").toLowerCase().includes(query)
+        );
+      });
+    }
+
+    return sortRows(result, sortConfig);
+  }, [selectedFlow, selectedStatus, searchText, sortConfig]);
+
+  const selectedStudentProfile = useMemo(() => {
+    if (!selectedStudentNumber) return null;
+
+    return (
+      selectedFlow?.detailRows?.find((row) => row.studentNumber === selectedStudentNumber) || null
+    );
+  }, [selectedFlow, selectedStudentNumber]);
 
   const lostByCourseRows = useMemo(() => {
     const map = new Map();
@@ -628,6 +947,22 @@ export default function StudentRetentionDashboard() {
     }));
   }, [flowRows]);
 
+  function handleSort(key) {
+    setSortConfig((current) => {
+      if (current.key === key) {
+        return {
+          key,
+          direction: current.direction === "asc" ? "desc" : "asc",
+        };
+      }
+
+      return {
+        key,
+        direction: "asc",
+      };
+    });
+  }
+
   if (!selectedFlow) {
     return (
       <div className="min-h-screen bg-slate-50 p-6 text-slate-900">
@@ -657,9 +992,7 @@ export default function StudentRetentionDashboard() {
 
             <div className="grid w-full max-w-3xl gap-3 md:grid-cols-3">
               <label className="block">
-                <span className="mb-1 block text-sm font-semibold text-white/90">
-                  View By
-                </span>
+                <span className="mb-1 block text-sm font-semibold text-white/90">View By</span>
                 <select
                   value={viewMode}
                   onChange={(e) => setViewMode(e.target.value)}
@@ -711,15 +1044,15 @@ export default function StudentRetentionDashboard() {
                   Student Status
                 </span>
                 <select
-                    value={selectedStatus}
-                    onChange={(e) => setSelectedStatus(e.target.value)}
-                    className="w-full rounded-xl border border-white/30 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-sm outline-none"
-                    >
-                    <option>All</option>
-                    <option>Stayed</option>
-                    <option>New / Returned</option>
-                    <option>Lost / Not Active</option>
-                    </select>
+                  value={selectedStatus}
+                  onChange={(e) => setSelectedStatus(e.target.value)}
+                  className="w-full rounded-xl border border-white/30 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-sm outline-none"
+                >
+                  <option>All</option>
+                  <option>Stayed</option>
+                  <option>New / Returned</option>
+                  <option>Lost / Not Active</option>
+                </select>
               </label>
             </div>
           </div>
@@ -777,7 +1110,11 @@ export default function StudentRetentionDashboard() {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <KpiCard
               title="Net Student Change"
-              value={selectedFlow.netChange >= 0 ? `+${selectedFlow.netChange}` : selectedFlow.netChange}
+              value={
+                selectedFlow.netChange >= 0
+                  ? `+${selectedFlow.netChange}`
+                  : selectedFlow.netChange
+              }
               subtitle="New + returned - lost"
               icon={TrendingUp}
             />
@@ -915,6 +1252,7 @@ export default function StudentRetentionDashboard() {
 
           <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <h3 className="text-lg font-bold text-slate-900">CEO Insights</h3>
+
             <div className="mt-4 space-y-3 text-sm leading-6 text-slate-600">
               <p>
                 In <strong className="text-slate-900">{periodLabel}</strong>, there were{" "}
@@ -932,17 +1270,19 @@ export default function StudentRetentionDashboard() {
               </p>
 
               <p>
-                The period had <strong className="text-slate-900">{selectedFlow.newStudents}</strong>{" "}
-                new students, <strong className="text-slate-900">{selectedFlow.returned}</strong>{" "}
-                returned students, and{" "}
-                <strong className="text-slate-900">{selectedFlow.lost}</strong> students who were
-                active last period but not active this period.
+                The period had{" "}
+                <strong className="text-slate-900">{selectedFlow.newStudents}</strong> new students,{" "}
+                <strong className="text-slate-900">{selectedFlow.returned}</strong> returned
+                students, and <strong className="text-slate-900">{selectedFlow.lost}</strong>{" "}
+                students who were active last period but not active this period.
               </p>
 
               <p>
                 Net student change was{" "}
                 <strong className="text-slate-900">
-                  {selectedFlow.netChange >= 0 ? `+${selectedFlow.netChange}` : selectedFlow.netChange}
+                  {selectedFlow.netChange >= 0
+                    ? `+${selectedFlow.netChange}`
+                    : selectedFlow.netChange}
                 </strong>
                 .
               </p>
@@ -951,12 +1291,50 @@ export default function StudentRetentionDashboard() {
         </section>
 
         <section>
-          <TopTable
+          <StudentMiniProfile
+            profile={selectedStudentProfile}
+            viewMode={viewMode}
+            onClose={() => setSelectedStudentNumber("")}
+          />
+        </section>
+
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h3 className="text-lg font-bold text-slate-900">Student Movement Detail</h3>
+              <p className="mt-1 text-sm text-slate-500">
+                Search, sort, and click a student to view the mini profile.
+              </p>
+            </div>
+
+            <div className="relative w-full md:max-w-sm">
+              <Search className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
+              <input
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                placeholder="Search student, course, level, or staff"
+                className="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm outline-none focus:border-[#53C8E0]"
+              />
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <SortableStudentTable
             title={`Student Movement Detail — ${filteredStudentRows.length} students`}
             rows={filteredStudentRows}
+            sortConfig={sortConfig}
+            onSort={handleSort}
+            selectedStudentNumber={selectedStudentNumber}
+            onRowClick={(row) => setSelectedStudentNumber(row.studentNumber)}
             columns={[
               { key: "studentName", label: "Student" },
               { key: "status", label: "Status" },
+              {
+                key: "totalPaidRevenue",
+                label: "Total Paid Revenue",
+                render: (row) => formatHKD(row.totalPaidRevenue),
+              },
               {
                 key: "currentRevenue",
                 label: "Current Period Revenue",
@@ -972,6 +1350,7 @@ export default function StudentRetentionDashboard() {
               { key: "courseName", label: "Course Name" },
               { key: "courseLevel", label: "Course Level" },
               { key: "staff", label: "Staff" },
+              { key: "usualWeekday", label: "Usual Lesson Day" },
               { key: "firstActivePeriod", label: "First Active Period" },
               { key: "lastActivePeriod", label: "Last Active Period" },
             ]}
