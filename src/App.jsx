@@ -3,6 +3,7 @@ import PasswordGate from "./PasswordGate";
 import RevenueDashboard from "./pages/RevenueDashboard";
 import CampDashboard from "./pages/CampDashboard";
 import TermDashboard from "./pages/TermDashboard";
+import StudentRetentionDashboard from "./pages/StudentRetentionDashboard";
 
 export default function App() {
   const [activePage, setActivePage] = useState("revenue");
@@ -11,6 +12,7 @@ export default function App() {
     { id: "revenue", label: "Revenue Dashboard" },
     { id: "camp", label: "Camp Dashboard" },
     { id: "term", label: "Term Dashboard" },
+    { id: "retention", label: "Student Retention" },
   ];
 
   return (
@@ -37,6 +39,7 @@ export default function App() {
         {activePage === "revenue" && <RevenueDashboard />}
         {activePage === "camp" && <CampDashboard />}
         {activePage === "term" && <TermDashboard />}
+        {activePage === "retention" && <StudentRetentionDashboard />}
       </div>
     </PasswordGate>
   );
