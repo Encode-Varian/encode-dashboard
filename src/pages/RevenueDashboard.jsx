@@ -1,7 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import Papa from "papaparse";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
 import {
   BarChart,
   Bar,
@@ -11,18 +9,17 @@ import {
   ResponsiveContainer,
   CartesianGrid,
   Legend,
-  ComposedChart,
+  LineChart,
   Line,
 } from "recharts";
 import {
-  Upload,
-  TrendingUp,
+  DollarSign,
   Users,
   Clock,
-  DollarSign,
   Target,
-  FileText,
   Download,
+  CalendarDays,
+  BookOpen,
 } from "lucide-react";
 
 const MONTHLY_TARGET = 150000;
@@ -44,6 +41,7 @@ function toNumber(value) {
 
 function parseDate(value) {
   if (!value) return null;
+
   const raw = String(value).trim();
 
   if (/^\d{4}-\d{1,2}-\d{1,2}/.test(raw)) {
@@ -51,13 +49,13 @@ function parseDate(value) {
     return Number.isNaN(d.getTime()) ? null : d;
   }
 
-  const slashParts = raw.split(/[\/\-]/).map((x) => x.trim());
+  const parts = raw.split(/[\/\-]/).map((x) => x.trim());
 
-  if (slashParts.length === 3) {
-    const [a, b, c] = slashParts;
+  if (parts.length === 3) {
+    const [a, b, c] = parts;
     const year = c.length === 2 ? `20${c}` : c;
 
-    // Assumes Schooltracs usually exports DD/MM/YYYY.
+    // Schooltracs commonly exports DD/MM/YYYY.
     const d = new Date(Number(year), Number(b) - 1, Number(a));
     return Number.isNaN(d.getTime()) ? null : d;
   }
@@ -67,7 +65,7 @@ function parseDate(value) {
 }
 
 function formatDateKey(date) {
-  if (!date) return "Unknown";
+  if (!date) return "";
 
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, "0");
@@ -86,16 +84,14 @@ function getLastDayOfCurrentMonth() {
   return new Date(today.getFullYear(), today.getMonth() + 1, 0);
 }
 
-function monthKey(date) {
+function getMonthKey(date) {
   if (!date) return "Unknown";
-
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, "0");
-
   return `${y}-${m}`;
 }
 
-function weekKey(date) {
+function getWeekKey(date) {
   if (!date) return "Unknown";
 
   const copy = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
@@ -117,74 +113,72 @@ function formatHKD(value) {
   }).format(value || 0);
 }
 
+function formatNumber(value) {
+  return new Intl.NumberFormat("en-HK", {
+    maximumFractionDigits: 0,
+  }).format(value || 0);
+}
+
 function formatPercent(value) {
   if (!Number.isFinite(value)) return "—";
   return `${(value * 100).toFixed(1)}%`;
 }
 
-function cleanAttendance(value) {
+function normalizeCategory(value) {
   const raw = String(value || "").trim();
-
-  if (!raw) return "Empty";
-
   const lower = raw.toLowerCase();
 
-  if (lower === "present") return "Present";
-  if (lower === "leave") return "Leave";
-  if (lower === "sick") return "Sick";
-  if (lower === "absent") return "Absent";
+  if (lower === "regular") return "Regular";
+  if (lower === "elective" || lower === "camp") return "Elective";
+  if (lower === "trial") return "Trial";
+  if (lower === "competition") return "Competition";
+  if (lower === "jurassicode" || lower === "jurassi code") return "JurassiCode";
 
-  return raw;
+  return raw || "Other";
 }
 
 function normalizeRow(row, index) {
   const date = parseDate(row.Date || row.date);
+  const dateKey = formatDateKey(date);
   const paid = toNumber(row.Paid || row.paid);
   const durationRaw = toNumber(row.Duration || row.duration);
-
-  // If duration is larger than 10, assume it is minutes.
-  // Example: 90 becomes 1.5 hours.
-  // If duration is 1.5, keep it as hours.
   const durationHours = durationRaw > 10 ? durationRaw / 60 : durationRaw;
 
-  const attendanceStatus = cleanAttendance(row.Attendance || row.attendance);
-
-  const courseCategory =
-    String(row["Course Category"] || row.courseCategory || "Uncategorized").trim() ||
-    "Uncategorized";
+  const courseCategory = normalizeCategory(row["Course Category"] || row.courseCategory);
 
   const courseName =
     String(row["Course Name"] || row.courseName || "Unknown Course").trim() ||
     "Unknown Course";
 
+  const courseLevel =
+    String(row["Course Level"] || row.courseLevel || "Unknown").trim() || "Unknown";
+
   const studentNumber = String(
     row["Student Number"] || row.studentNumber || row["Student Name"] || `row-${index}`
   ).trim();
 
+  const studentName = String(row["Student Name"] || "").trim() || studentNumber;
+
   return {
     id: index,
-    studentName: String(row["Student Name"] || "").trim(),
-    branchName: String(row["Branch Name"] || "").trim(),
-    studentNumber,
+    date,
+    dateKey,
+    monthKey: getMonthKey(date),
+    weekKey: getWeekKey(date),
+    paid,
+    durationHours,
     courseCategory,
     courseName,
-    coursePair: `${courseCategory} / ${courseName}`,
-    courseLevel: String(row["Course Level"] || "").trim() || "Unknown",
-    date,
-    dateKey: formatDateKey(date),
-    monthKey: monthKey(date),
-    weekKey: weekKey(date),
-    startTime: row["Start Time"] || "",
-    endTime: row["End Time"] || "",
-    durationHours,
+    courseLevel,
+    studentNumber,
+    studentName,
+    branchName: String(row["Branch Name"] || "").trim() || "Unknown",
     staff: String(row.Staff || "Unknown").trim() || "Unknown",
-    attendanceStatus,
-    paid,
-    receiptNumber: String(row["Receipt Number"] || "").trim(),
+    attendance: String(row.Attendance || "").trim() || "Empty",
   };
 }
 
-function groupSum(rows, keyFn) {
+function groupRows(rows, keyFn) {
   const map = new Map();
 
   rows.forEach((row) => {
@@ -194,8 +188,8 @@ function groupSum(rows, keyFn) {
       map.set(key, {
         key,
         revenue: 0,
-        hours: 0,
-        lessonCount: 0,
+        lessons: 0,
+        lessonHours: 0,
         students: new Set(),
       });
     }
@@ -203,73 +197,46 @@ function groupSum(rows, keyFn) {
     const item = map.get(key);
 
     item.revenue += row.paid;
-    item.hours += row.durationHours;
-    item.lessonCount += 1;
-    item.students.add(row.studentNumber);
+
+    if (row.paid > 0) {
+      item.lessons += 1;
+      item.lessonHours += row.durationHours;
+      item.students.add(row.studentNumber);
+    }
   });
 
   return Array.from(map.values()).map((item) => ({
     ...item,
-    studentCount: item.students.size,
-    revenuePerHour: item.hours ? item.revenue / item.hours : 0,
+    students: item.students.size,
     revenuePerStudent: item.students.size ? item.revenue / item.students.size : 0,
+    revenuePerLessonHour: item.lessonHours ? item.revenue / item.lessonHours : 0,
   }));
-}
-
-function getUnique(rows, key) {
-  return ["All", ...Array.from(new Set(rows.map((row) => row[key]).filter(Boolean))).sort()];
 }
 
 function KpiCard({ title, value, subtitle, icon: Icon }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-sm font-medium text-slate-500">{title}</p>
-          <p className="mt-2 text-2xl font-bold text-slate-900">{value}</p>
-          {subtitle && <p className="mt-1 text-sm text-slate-500">{subtitle}</p>}
+    <div className="relative min-h-[140px] rounded-2xl border border-slate-200 bg-white p-5 pr-16 shadow-sm">
+      {Icon && (
+        <div className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-xl bg-[#53C8E0]/15 text-[#0E8FA4]">
+          <Icon size={22} />
         </div>
+      )}
 
-        {Icon && (
-          <div className="rounded-xl bg-[#53C8E0]/15 p-3 text-[#0E8FA4]">
-            <Icon size={22} />
-          </div>
-        )}
-      </div>
+      <p className="text-sm font-semibold leading-5 text-slate-500">{title}</p>
+      <p className="mt-3 whitespace-nowrap text-2xl font-bold leading-tight text-slate-900">
+        {value}
+      </p>
+      {subtitle && <p className="mt-2 text-sm leading-5 text-slate-500">{subtitle}</p>}
     </div>
   );
 }
 
-function Select({ label, value, onChange, options }) {
+function ChartCard({ title, children }) {
   return (
-    <label className="flex flex-col gap-1 text-sm font-medium text-slate-600">
-      {label}
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm outline-none focus:border-[#53C8E0]"
-      >
-        {options.map((option) => (
-          <option key={option} value={option}>
-            {option}
-          </option>
-        ))}
-      </select>
-    </label>
-  );
-}
-
-function DateInput({ label, value, onChange }) {
-  return (
-    <label className="flex flex-col gap-1 text-sm font-medium text-slate-600">
-      {label}
-      <input
-        type="date"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm outline-none focus:border-[#53C8E0]"
-      />
-    </label>
+    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h3 className="mb-4 text-lg font-bold text-slate-900">{title}</h3>
+      <div className="h-80">{children}</div>
+    </div>
   );
 }
 
@@ -279,7 +246,7 @@ function TopTable({ title, rows, columns }) {
       <h3 className="mb-4 text-lg font-bold text-slate-900">{title}</h3>
 
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[760px] border-collapse text-left text-sm">
+        <table className="w-full min-w-[900px] border-collapse text-left text-sm">
           <thead>
             <tr className="border-b border-slate-200 text-slate-500">
               {columns.map((col) => (
@@ -294,15 +261,18 @@ function TopTable({ title, rows, columns }) {
             {rows.length === 0 ? (
               <tr>
                 <td className="px-3 py-6 text-slate-500" colSpan={columns.length}>
-                  No data available for the selected filters.
+                  No data available.
                 </td>
               </tr>
             ) : (
-              rows.map((row, idx) => (
-                <tr key={`${row.key}-${idx}`} className="border-b border-slate-100 last:border-0">
+              rows.map((row, index) => (
+                <tr
+                  key={`${row.key || "row"}-${index}`}
+                  className="border-b border-slate-100 last:border-0"
+                >
                   {columns.map((col) => (
                     <td key={col.key} className="px-3 py-3 text-slate-700">
-                      {col.render ? col.render(row, idx) : row[col.key]}
+                      {col.render ? col.render(row, index) : row[col.key]}
                     </td>
                   ))}
                 </tr>
@@ -315,51 +285,19 @@ function TopTable({ title, rows, columns }) {
   );
 }
 
-function ChartCard({ title, children }) {
-  return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-      <h3 className="mb-4 text-lg font-bold text-slate-900">{title}</h3>
-      <div className="h-80">{children}</div>
-    </div>
-  );
-}
-
-function EmptyState() {
-  return (
-    <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center shadow-sm">
-      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#53C8E0]/15 text-[#0E8FA4]">
-        <Upload size={28} />
-      </div>
-
-      <h2 className="text-xl font-bold text-slate-900">Upload your Schooltracs CSV</h2>
-
-      <p className="mx-auto mt-2 max-w-2xl text-sm leading-6 text-slate-500">
-        This dashboard uses lesson date and the Paid column as earned revenue. It supports daily,
-        weekly, and monthly views, course ranking, and staff allocation analysis.
-      </p>
-    </div>
-  );
-}
-
 export default function RevenueDashboard() {
-  const dashboardRef = useRef(null);
+  const reportRef = useRef(null);
 
   const [rows, setRows] = useState([]);
   const [fileName, setFileName] = useState("");
-  const [viewBy, setViewBy] = useState("Monthly");
-  const [courseCategory, setCourseCategory] = useState("All");
-  const [courseName, setCourseName] = useState("All");
-  const [staff, setStaff] = useState("All");
-  const [attendance, setAttendance] = useState("All");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [startDate, setStartDate] = useState(formatDateKey(getFirstDayOfCurrentMonth()));
+  const [endDate, setEndDate] = useState(formatDateKey(getLastDayOfCurrentMonth()));
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedCourseName, setSelectedCourseName] = useState("All");
+  const [timeGrouping, setTimeGrouping] = useState("Daily");
 
   useEffect(() => {
     const entries = Object.entries(csvFiles);
-
-    if (!entries.length) {
-      return;
-    }
 
     const allRows = entries.flatMap(([filePath, csvText]) => {
       const result = Papa.parse(csvText, {
@@ -367,195 +305,198 @@ export default function RevenueDashboard() {
         skipEmptyLines: true,
       });
 
-      return result.data.map((row, index) => {
-        return normalizeRow(row, `${filePath}-${index}`);
-      });
+      return result.data.map((row, index) => normalizeRow(row, `${filePath}-${index}`));
     });
 
-    const normalized = allRows.filter((row) => row.date && row.dateKey !== "Unknown");
+    const cleanedRows = allRows.filter((row) => row.date && row.dateKey);
 
-    setRows(normalized);
+    setRows(cleanedRows);
 
-    const loadedFileNames = entries
-      .map(([filePath]) => filePath.split("/").pop())
-      .join(", ");
-
-    setFileName(loadedFileNames);
+    const loadedFileNames = entries.map(([filePath]) => filePath.split("/").pop()).join(", ");
+    setFileName(loadedFileNames || "No CSV files found");
 
     setStartDate(formatDateKey(getFirstDayOfCurrentMonth()));
     setEndDate(formatDateKey(getLastDayOfCurrentMonth()));
   }, []);
 
-  async function handleDownloadPdf() {
-    if (!dashboardRef.current || !rows.length) return;
+  const courseCategories = useMemo(() => {
+    return ["All", ...Array.from(new Set(rows.map((row) => row.courseCategory))).sort()];
+  }, [rows]);
 
-    const canvas = await html2canvas(dashboardRef.current, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: "#f8fafc",
-    });
+  const courseNames = useMemo(() => {
+    const sourceRows =
+      selectedCategory === "All"
+        ? rows
+        : rows.filter((row) => row.courseCategory === selectedCategory);
 
-    const imgData = canvas.toDataURL("image/png");
-    const pdf = new jsPDF("p", "mm", "a4");
-
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
-
-    const imgWidth = pageWidth;
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-    let heightLeft = imgHeight;
-    let position = 0;
-
-    pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-    heightLeft -= pageHeight;
-
-    while (heightLeft > 0) {
-      position = heightLeft - imgHeight;
-      pdf.addPage();
-      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
-    }
-
-    const dateLabel = new Date().toISOString().slice(0, 10);
-    pdf.save(`encode-earned-revenue-dashboard-${dateLabel}.pdf`);
-  }
-
-  function handleFiles(files) {
-    const selectedFiles = Array.from(files || []);
-    if (!selectedFiles.length) return;
-
-    setFileName(selectedFiles.map((file) => file.name).join(", "));
-
-    Promise.all(
-      selectedFiles.map(
-        (file) =>
-          new Promise((resolve, reject) => {
-            Papa.parse(file, {
-              header: true,
-              skipEmptyLines: true,
-              complete: (result) => resolve(result.data),
-              error: reject,
-            });
-          })
-      )
-    ).then((allData) => {
-      const combined = allData.flat();
-
-      const normalized = combined
-        .map(normalizeRow)
-        .filter((row) => row.date && row.dateKey !== "Unknown");
-
-      setRows(normalized);
-
-      if (normalized.length) {
-        const dates = normalized.map((row) => row.date).sort((a, b) => a - b);
-        setStartDate(formatDateKey(dates[0]));
-        setEndDate(formatDateKey(dates[dates.length - 1]));
-      }
-    });
-  }
+    return ["All", ...Array.from(new Set(sourceRows.map((row) => row.courseName))).sort()];
+  }, [rows, selectedCategory]);
 
   const filteredRows = useMemo(() => {
     return rows.filter((row) => {
-      if (startDate && row.dateKey < startDate) return false;
-      if (endDate && row.dateKey > endDate) return false;
-      if (courseCategory !== "All" && row.courseCategory !== courseCategory) return false;
-      if (courseName !== "All" && row.courseName !== courseName) return false;
-      if (staff !== "All" && row.staff !== staff) return false;
-      if (attendance !== "All" && row.attendanceStatus !== attendance) return false;
+      const dateMatch = row.dateKey >= startDate && row.dateKey <= endDate;
+      const categoryMatch =
+        selectedCategory === "All" || row.courseCategory === selectedCategory;
+      const courseMatch =
+        selectedCourseName === "All" || row.courseName === selectedCourseName;
 
-      return true;
+      return dateMatch && categoryMatch && courseMatch;
     });
-  }, [rows, startDate, endDate, courseCategory, courseName, staff, attendance]);
+  }, [rows, startDate, endDate, selectedCategory, selectedCourseName]);
 
-  const courseCategoryOptions = useMemo(() => getUnique(rows, "courseCategory"), [rows]);
-
-  const courseNameOptions = useMemo(() => {
-    const base =
-      courseCategory === "All" ? rows : rows.filter((row) => row.courseCategory === courseCategory);
-
-    return getUnique(base, "courseName");
-  }, [rows, courseCategory]);
-
-  const staffOptions = useMemo(() => getUnique(rows, "staff"), [rows]);
-  const attendanceOptions = useMemo(() => getUnique(rows, "attendanceStatus"), [rows]);
+  const paidRows = useMemo(() => {
+    return filteredRows.filter((row) => row.paid > 0);
+  }, [filteredRows]);
 
   const summary = useMemo(() => {
-    const revenue = filteredRows.reduce((sum, row) => sum + row.paid, 0);
-    const hours = filteredRows.reduce((sum, row) => sum + row.durationHours, 0);
-    const students = new Set(filteredRows.map((row) => row.studentNumber)).size;
+    const totalRevenue = paidRows.reduce((sum, row) => sum + row.paid, 0);
+    const totalStudents = new Set(paidRows.map((row) => row.studentNumber)).size;
+    const totalLessons = paidRows.length;
+    const totalLessonHours = paidRows.reduce((sum, row) => sum + row.durationHours, 0);
 
     return {
-      revenue,
-      hours,
-      students,
-      targetProgress: revenue / MONTHLY_TARGET,
-      revenuePerStudent: students ? revenue / students : 0,
-      revenuePerHour: hours ? revenue / hours : 0,
+      totalRevenue,
+      totalStudents,
+      totalLessons,
+      totalLessonHours,
+      revenuePerStudent: totalStudents ? totalRevenue / totalStudents : 0,
+      revenuePerLessonHour: totalLessonHours ? totalRevenue / totalLessonHours : 0,
+      targetProgress: MONTHLY_TARGET ? totalRevenue / MONTHLY_TARGET : 0,
+      remainingToTarget: Math.max(MONTHLY_TARGET - totalRevenue, 0),
     };
-  }, [filteredRows]);
+  }, [paidRows]);
 
-  const trendData = useMemo(() => {
-    const keyFn = (row) => {
-      if (viewBy === "Daily") return row.dateKey;
-      if (viewBy === "Weekly") return row.weekKey;
-      return row.monthKey;
+  const categoryRevenue = useMemo(() => {
+    const categories = {
+      Regular: 0,
+      Elective: 0,
+      Trial: 0,
+      Competition: 0,
+      JurassiCode: 0,
+      Other: 0,
     };
 
-    return groupSum(filteredRows, keyFn)
+    paidRows.forEach((row) => {
+      if (row.courseCategory === "Regular") {
+        categories.Regular += row.paid;
+      } else if (row.courseCategory === "Elective") {
+        categories.Elective += row.paid;
+      } else if (row.courseCategory === "Trial") {
+        categories.Trial += row.paid;
+      } else if (row.courseCategory === "Competition") {
+        categories.Competition += row.paid;
+      } else if (row.courseCategory === "JurassiCode") {
+        categories.JurassiCode += row.paid;
+      } else {
+        categories.Other += row.paid;
+      }
+    });
+
+    return categories;
+  }, [paidRows]);
+
+  const trendRows = useMemo(() => {
+    let keyFn = (row) => row.dateKey;
+
+    if (timeGrouping === "Weekly") {
+      keyFn = (row) => row.weekKey;
+    }
+
+    if (timeGrouping === "Monthly") {
+      keyFn = (row) => row.monthKey;
+    }
+
+    return groupRows(paidRows, keyFn)
       .sort((a, b) => String(a.key).localeCompare(String(b.key)))
-      .map((item) => ({
-        period: item.key,
-        revenue: Math.round(item.revenue),
-        target: viewBy === "Monthly" ? MONTHLY_TARGET : undefined,
+      .map((row) => ({
+        period: row.key,
+        revenue: Math.round(row.revenue),
+        students: row.students,
+        lessons: row.lessons,
       }));
-  }, [filteredRows, viewBy]);
+  }, [paidRows, timeGrouping]);
 
-  const categoryData = useMemo(() => {
-    return groupSum(filteredRows, (row) => row.courseCategory)
-      .sort((a, b) => b.revenue - a.revenue)
-      .map((item) => ({
-        name: item.key,
-        revenue: Math.round(item.revenue),
-      }));
-  }, [filteredRows]);
+  const categoryRows = useMemo(() => {
+    return groupRows(paidRows, (row) => row.courseCategory).sort(
+      (a, b) => b.revenue - a.revenue
+    );
+  }, [paidRows]);
 
-  const coursePairRows = useMemo(() => {
-    return groupSum(filteredRows, (row) => row.coursePair)
-      .sort((a, b) => b.revenue - a.revenue)
-      .slice(0, 12);
-  }, [filteredRows]);
+  const courseNameRows = useMemo(() => {
+    return groupRows(paidRows, (row) => row.courseName).sort(
+      (a, b) => b.revenue - a.revenue
+    );
+  }, [paidRows]);
 
   const staffRows = useMemo(() => {
-    return groupSum(filteredRows, (row) => row.staff)
-      .sort((a, b) => b.revenue - a.revenue)
-      .slice(0, 12);
-  }, [filteredRows]);
+    return groupRows(paidRows, (row) => row.staff).sort((a, b) => b.revenue - a.revenue);
+  }, [paidRows]);
 
-  const topCourse = coursePairRows[0];
+  async function handleDownloadPdf() {
+    if (!reportRef.current) return;
+
+    try {
+      const html2canvas = (await import("html2canvas")).default;
+      const { jsPDF } = await import("jspdf");
+
+      const canvas = await html2canvas(reportRef.current, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#f8fafc",
+      });
+
+      const imgData = canvas.toDataURL("image/png");
+
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+
+      const imgWidth = pageWidth;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+      pdf.save(`encode-earned-revenue-${startDate}-to-${endDate}.pdf`);
+    } catch (error) {
+      console.error(error);
+      alert(
+        "PDF download failed. Please make sure html2canvas and jspdf are installed: npm install html2canvas jspdf"
+      );
+    }
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 p-6 text-slate-900">
-      <div ref={dashboardRef} className="mx-auto max-w-7xl space-y-6">
-        <header className="flex flex-col gap-4 rounded-3xl bg-[#53C8E0] p-6 text-white shadow-sm md:flex-row md:items-center md:justify-between">
-          <div>
-            <p className="text-sm font-medium text-white/80">Encode Education</p>
-            <h1 className="mt-1 text-3xl font-bold tracking-tight">
-              Earned Revenue Dashboard
-            </h1>
-            <p className="mt-2 text-sm text-white/85">
-              Lesson-date revenue view based on Schooltracs CSV. Paid amount is treated as earned
-              revenue.
-            </p>
-          </div>
+      <div ref={reportRef} className="mx-auto max-w-7xl space-y-6">
+        <header className="rounded-3xl bg-[#53C8E0] p-6 text-white shadow-sm">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p className="text-sm font-medium text-white/80">Encode Education</p>
+              <h1 className="mt-1 text-3xl font-bold tracking-tight">
+                Earned Revenue Dashboard
+              </h1>
+              <p className="mt-2 text-sm text-white/85">
+                Earned revenue from Schooltracs lesson records. Revenue is calculated from{" "}
+                <strong>Paid</strong> by lesson date.
+              </p>
+              <p className="mt-1 text-xs text-white/75">Loaded files: {fileName}</p>
+            </div>
 
-          <div className="flex flex-col gap-3 sm:flex-row">
             <button
               type="button"
               onClick={handleDownloadPdf}
-              disabled={!rows.length}
-              className="flex items-center justify-center gap-3 rounded-2xl bg-[#F7941D] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-bold text-[#0E8FA4] shadow-sm hover:bg-white/90"
             >
               <Download size={18} />
               Download PDF
@@ -563,229 +504,288 @@ export default function RevenueDashboard() {
           </div>
         </header>
 
-        {fileName && (
-          <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 shadow-sm">
-            <FileText size={18} className="text-[#0E8FA4]" />
-            Loaded: <span className="font-semibold text-slate-900">{fileName}</span>
-            <span className="ml-auto">{rows.length.toLocaleString()} lesson rows</span>
-          </div>
-        )}
-
-        {!rows.length ? (
-          <EmptyState />
-        ) : (
-          <>
-            <section className="grid gap-4 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm md:grid-cols-3 lg:grid-cols-7">
-              <DateInput label="Start Date" value={startDate} onChange={setStartDate} />
-              <DateInput label="End Date" value={endDate} onChange={setEndDate} />
-
-              <Select
-                label="View By"
-                value={viewBy}
-                onChange={setViewBy}
-                options={["Daily", "Weekly", "Monthly"]}
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+            <label className="block">
+              <span className="mb-1 block text-sm font-semibold text-slate-600">
+                Start Date
+              </span>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-[#53C8E0]"
               />
+            </label>
 
-              <Select
-                label="Category"
-                value={courseCategory}
-                onChange={(v) => {
-                  setCourseCategory(v);
-                  setCourseName("All");
+            <label className="block">
+              <span className="mb-1 block text-sm font-semibold text-slate-600">End Date</span>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-[#53C8E0]"
+              />
+            </label>
+
+            <label className="block">
+              <span className="mb-1 block text-sm font-semibold text-slate-600">
+                Course Category
+              </span>
+              <select
+                value={selectedCategory}
+                onChange={(e) => {
+                  setSelectedCategory(e.target.value);
+                  setSelectedCourseName("All");
                 }}
-                options={courseCategoryOptions}
-              />
+                className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-[#53C8E0]"
+              >
+                {courseCategories.map((category) => (
+                  <option key={category}>{category}</option>
+                ))}
+              </select>
+            </label>
 
-              <Select
-                label="Course"
-                value={courseName}
-                onChange={setCourseName}
-                options={courseNameOptions}
-              />
+            <label className="block">
+              <span className="mb-1 block text-sm font-semibold text-slate-600">
+                Course Name
+              </span>
+              <select
+                value={selectedCourseName}
+                onChange={(e) => setSelectedCourseName(e.target.value)}
+                className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-[#53C8E0]"
+              >
+                {courseNames.map((courseName) => (
+                  <option key={courseName}>{courseName}</option>
+                ))}
+              </select>
+            </label>
 
-              <Select label="Staff" value={staff} onChange={setStaff} options={staffOptions} />
+            <label className="block">
+              <span className="mb-1 block text-sm font-semibold text-slate-600">
+                Time Grouping
+              </span>
+              <select
+                value={timeGrouping}
+                onChange={(e) => setTimeGrouping(e.target.value)}
+                className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-[#53C8E0]"
+              >
+                <option>Daily</option>
+                <option>Weekly</option>
+                <option>Monthly</option>
+              </select>
+            </label>
+          </div>
+        </section>
 
-              <Select
-                label="Attendance"
-                value={attendance}
-                onChange={setAttendance}
-                options={attendanceOptions}
-              />
-            </section>
+        <section className="space-y-4">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <KpiCard
+              title="Total Revenue"
+              value={formatHKD(summary.totalRevenue)}
+              subtitle="Earned revenue from Paid"
+              icon={DollarSign}
+            />
 
-            <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-              <KpiCard
-                title="Earned Revenue"
-                value={formatHKD(summary.revenue)}
-                subtitle={`${filteredRows.length.toLocaleString()} lessons`}
-                icon={DollarSign}
-              />
+            <KpiCard
+              title="Revenue / Student"
+              value={formatHKD(summary.revenuePerStudent)}
+              subtitle={`${formatNumber(summary.totalStudents)} unique students`}
+              icon={Users}
+            />
 
-              <KpiCard
-                title="Target Progress"
-                value={formatPercent(summary.targetProgress)}
-                subtitle={`${formatHKD(summary.revenue)} / ${formatHKD(MONTHLY_TARGET)}`}
-                icon={Target}
-              />
+            <KpiCard
+              title="Revenue / Lesson Hour"
+              value={formatHKD(summary.revenuePerLessonHour)}
+              subtitle={`${summary.totalLessonHours.toFixed(1)} lesson hours`}
+              icon={Clock}
+            />
 
-              <KpiCard
-                title="Scheduled Students"
-                value={summary.students.toLocaleString()}
-                subtitle="Distinct student numbers"
-                icon={Users}
-              />
+            <KpiCard
+              title="Monthly Target Progress"
+              value={formatPercent(summary.targetProgress)}
+              subtitle={`${formatHKD(summary.totalRevenue)} / ${formatHKD(MONTHLY_TARGET)}`}
+              icon={Target}
+            />
+          </div>
 
-              <KpiCard
-                title="Revenue / Student"
-                value={formatHKD(summary.revenuePerStudent)}
-                subtitle="Earned revenue ÷ students"
-                icon={TrendingUp}
-              />
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+            <KpiCard
+              title="Regular Revenue"
+              value={formatHKD(categoryRevenue.Regular)}
+              subtitle="Regular class earned revenue"
+              icon={BookOpen}
+            />
 
-              <KpiCard
-                title="Revenue / Lesson Hour"
-                value={formatHKD(summary.revenuePerHour)}
-                subtitle={`${summary.hours.toFixed(1)} total hours`}
-                icon={Clock}
-              />
-            </section>
+            <KpiCard
+              title="Elective Revenue"
+              value={formatHKD(categoryRevenue.Elective)}
+              subtitle="Camp / elective earned revenue"
+              icon={BookOpen}
+            />
 
-            <section className="grid gap-6 lg:grid-cols-3">
-              <div className="lg:col-span-2">
-                <ChartCard title={`Earned Revenue Trend — ${viewBy}`}>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <ComposedChart
-                      data={trendData}
-                      margin={{ top: 10, right: 20, left: 0, bottom: 20 }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="period" tick={{ fontSize: 12 }} />
-                      <YAxis tickFormatter={(v) => `${Math.round(v / 1000)}k`} />
-                      <Tooltip formatter={(value) => formatHKD(value)} />
-                      <Legend />
+            <KpiCard
+              title="Trial Revenue"
+              value={formatHKD(categoryRevenue.Trial)}
+              subtitle="Trial lesson earned revenue"
+              icon={BookOpen}
+            />
 
-                      <Bar
-                        dataKey="revenue"
-                        name="Earned Revenue"
-                        radius={[8, 8, 0, 0]}
-                        fill={BRAND_PRIMARY}
-                      />
+            <KpiCard
+              title="Competition Revenue"
+              value={formatHKD(categoryRevenue.Competition)}
+              subtitle="Competition class earned revenue"
+              icon={BookOpen}
+            />
 
-                      {viewBy === "Monthly" && (
-                        <Line
-                          type="monotone"
-                          dataKey="target"
-                          name="Monthly Target"
-                          strokeWidth={2}
-                          dot={false}
-                          stroke={BRAND_SECONDARY}
-                        />
-                      )}
-                    </ComposedChart>
-                  </ResponsiveContainer>
-                </ChartCard>
-              </div>
+            <KpiCard
+              title="JurassiCode Revenue"
+              value={formatHKD(categoryRevenue.JurassiCode)}
+              subtitle="JurassiCode earned revenue"
+              icon={BookOpen}
+            />
 
-              <ChartCard title="Revenue by Course Category">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={categoryData}
-                    layout="vertical"
-                    margin={{ top: 10, right: 20, left: 40, bottom: 10 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis type="number" tickFormatter={(v) => `${Math.round(v / 1000)}k`} />
-                    <YAxis dataKey="name" type="category" width={100} tick={{ fontSize: 12 }} />
-                    <Tooltip formatter={(value) => formatHKD(value)} />
+            <KpiCard
+              title="Other Revenue"
+              value={formatHKD(categoryRevenue.Other)}
+              subtitle="Unmatched course category"
+              icon={BookOpen}
+            />
+          </div>
+        </section>
 
-                    <Bar
-                      dataKey="revenue"
-                      name="Earned Revenue"
-                      radius={[0, 8, 8, 0]}
-                      fill={BRAND_PRIMARY}
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-              </ChartCard>
-            </section>
+        <section className="grid gap-6 lg:grid-cols-2">
+          <ChartCard title={`Revenue Trend by ${timeGrouping}`}>
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={trendRows} margin={{ top: 10, right: 20, left: 0, bottom: 20 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="period" tick={{ fontSize: 12 }} />
+                <YAxis tickFormatter={(v) => `${Math.round(v / 1000)}k`} />
+                <Tooltip formatter={(value) => formatHKD(value)} />
+                <Legend />
+                <Line
+                  type="monotone"
+                  dataKey="revenue"
+                  name="Revenue"
+                  stroke={BRAND_PRIMARY}
+                  strokeWidth={3}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </ChartCard>
 
-            <section>
-              <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                <h3 className="text-lg font-bold text-slate-900">CEO Insights</h3>
+          <ChartCard title="Revenue by Course Category">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={categoryRows}
+                layout="vertical"
+                margin={{ top: 10, right: 20, left: 80, bottom: 10 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis type="number" tickFormatter={(v) => `${Math.round(v / 1000)}k`} />
+                <YAxis dataKey="key" type="category" width={120} tick={{ fontSize: 12 }} />
+                <Tooltip formatter={(value) => formatHKD(value)} />
+                <Legend />
+                <Bar
+                  dataKey="revenue"
+                  name="Revenue"
+                  radius={[0, 8, 8, 0]}
+                  fill={BRAND_SECONDARY}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </ChartCard>
+        </section>
 
-                <div className="mt-4 space-y-3 text-sm leading-6 text-slate-600">
-                  <p>
-                    Earned revenue for the selected period is{" "}
-                    <strong className="text-slate-900">{formatHKD(summary.revenue)}</strong>,
-                    equal to{" "}
-                    <strong className="text-slate-900">
-                      {formatPercent(summary.targetProgress)}
-                    </strong>{" "}
-                    of the HK$150,000 monthly target.
-                  </p>
+        <section className="grid gap-6 lg:grid-cols-2">
+          <ChartCard title="Top Course Names by Revenue">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={courseNameRows.slice(0, 10)}
+                layout="vertical"
+                margin={{ top: 10, right: 20, left: 100, bottom: 10 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis type="number" tickFormatter={(v) => `${Math.round(v / 1000)}k`} />
+                <YAxis dataKey="key" type="category" width={150} tick={{ fontSize: 12 }} />
+                <Tooltip formatter={(value) => formatHKD(value)} />
+                <Legend />
+                <Bar
+                  dataKey="revenue"
+                  name="Revenue"
+                  radius={[0, 8, 8, 0]}
+                  fill={BRAND_PRIMARY}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </ChartCard>
 
-                  <p>
-                    The dashboard found{" "}
-                    <strong className="text-slate-900">{summary.students}</strong> scheduled
-                    students and{" "}
-                    <strong className="text-slate-900">{summary.hours.toFixed(1)}</strong> lesson
-                    hours, giving revenue per lesson hour of{" "}
-                    <strong className="text-slate-900">
-                      {formatHKD(summary.revenuePerHour)}
-                    </strong>
-                    .
-                  </p>
+          <ChartCard title="Revenue by Staff">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={staffRows.slice(0, 10)}
+                layout="vertical"
+                margin={{ top: 10, right: 20, left: 80, bottom: 10 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis type="number" tickFormatter={(v) => `${Math.round(v / 1000)}k`} />
+                <YAxis dataKey="key" type="category" width={120} tick={{ fontSize: 12 }} />
+                <Tooltip formatter={(value) => formatHKD(value)} />
+                <Legend />
+                <Bar
+                  dataKey="revenue"
+                  name="Revenue"
+                  radius={[0, 8, 8, 0]}
+                  fill={BRAND_SECONDARY}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </ChartCard>
+        </section>
 
-                  {topCourse ? (
-                    <p>
-                      The highest revenue Course Category + Course Name pair is{" "}
-                      <strong className="text-slate-900">{topCourse.key}</strong>, generating{" "}
-                      <strong className="text-slate-900">{formatHKD(topCourse.revenue)}</strong>.
-                    </p>
-                  ) : null}
-                </div>
-              </div>
-            </section>
+        <section className="grid gap-6 lg:grid-cols-2">
+          <TopTable
+            title="Course Category Performance"
+            rows={categoryRows}
+            columns={[
+              { key: "key", label: "Course Category" },
+              { key: "revenue", label: "Revenue", render: (row) => formatHKD(row.revenue) },
+              { key: "students", label: "Students" },
+              { key: "lessons", label: "Paid Lessons" },
+              {
+                key: "revenuePerStudent",
+                label: "Revenue / Student",
+                render: (row) => formatHKD(row.revenuePerStudent),
+              },
+              {
+                key: "revenuePerLessonHour",
+                label: "Revenue / Lesson Hour",
+                render: (row) => formatHKD(row.revenuePerLessonHour),
+              },
+            ]}
+          />
 
-            <section className="space-y-6">
-              <TopTable
-                title="Top Course Category + Course Name Pairs"
-                rows={coursePairRows}
-                columns={[
-                  { key: "rank", label: "Rank", render: (_, idx) => idx + 1 },
-                  { key: "key", label: "Course Pair" },
-                  { key: "revenue", label: "Revenue", render: (row) => formatHKD(row.revenue) },
-                  { key: "studentCount", label: "Students" },
-                  { key: "hours", label: "Hours", render: (row) => row.hours.toFixed(1) },
-                  {
-                    key: "revenuePerHour",
-                    label: "Revenue / Hour",
-                    render: (row) => formatHKD(row.revenuePerHour),
-                  },
-                  { key: "lessonCount", label: "Lessons" },
-                ]}
-              />
-
-              <TopTable
-                title="Revenue by Teaching Allocation"
-                rows={staffRows}
-                columns={[
-                  { key: "rank", label: "Rank", render: (_, idx) => idx + 1 },
-                  { key: "key", label: "Staff" },
-                  { key: "revenue", label: "Revenue", render: (row) => formatHKD(row.revenue) },
-                  { key: "studentCount", label: "Students" },
-                  { key: "hours", label: "Hours", render: (row) => row.hours.toFixed(1) },
-                  {
-                    key: "revenuePerHour",
-                    label: "Revenue / Hour",
-                    render: (row) => formatHKD(row.revenuePerHour),
-                  },
-                  { key: "lessonCount", label: "Lessons" },
-                ]}
-              />
-            </section>
-          </>
-        )}
+          <TopTable
+            title="Top Course Name Performance"
+            rows={courseNameRows.slice(0, 20)}
+            columns={[
+              { key: "key", label: "Course Name" },
+              { key: "revenue", label: "Revenue", render: (row) => formatHKD(row.revenue) },
+              { key: "students", label: "Students" },
+              { key: "lessons", label: "Paid Lessons" },
+              {
+                key: "revenuePerStudent",
+                label: "Revenue / Student",
+                render: (row) => formatHKD(row.revenuePerStudent),
+              },
+              {
+                key: "revenuePerLessonHour",
+                label: "Revenue / Lesson Hour",
+                render: (row) => formatHKD(row.revenuePerLessonHour),
+              },
+            ]}
+          />
+        </section>
       </div>
     </div>
   );
