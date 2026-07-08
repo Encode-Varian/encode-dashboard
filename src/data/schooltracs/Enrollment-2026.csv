@@ -19,7 +19,7 @@
 "Aiden Lee",Main,TKO260997,Regular,Exploration,EX-OPER,2026-06-16,10:00,11:30,90,"Mr. Michael",Present,515,515,R-1-003353,
 "Aiden Lee",Main,TKO260997,Regular,Exploration,EX-SEQ,2026-06-23,10:00,11:30,90,"Mr. Michael",Present,515,515,R-1-003353,
 "Aiden Lee",Main,TKO260997,Regular,Exploration,EX-SEQ,2026-06-30,10:00,11:30,90,"Mr. Michael",Leave,0,0,R-1-003353,"Make Up To: 09/07 Thu 10:00"
-"Aiden Lee",Main,TKO260997,Regular,Exploration,EX-SEQ,2026-07-07,10:00,11:30,90,"Mr Singh",,515,515,R-1-003353,
+"Aiden Lee",Main,TKO260997,Regular,Exploration,EX-SEQ,2026-07-07,10:00,11:30,90,"Mr Singh",Present,515,515,R-1-003353,
 "Aiden Lee",Main,TKO260997,Regular,Exploration,EX-SEQ,2026-07-09,10:00,11:30,90,"Mr. Michael",,515,515,R-1-003353,"Single From: 30/06 Tue 10:00"
 "Aiden Lee",Main,TKO260997,Regular,Exploration,EX-SEQ,2026-07-14,10:00,11:30,90,"Mr. Michael",,515,515,R-1-003353,
 "Aiden Lee",Main,TKO260997,Regular,Exploration,EX-SEQ,2026-07-21,10:00,11:30,90,"Mr. Michael",,515,515,R-1-003353,
@@ -390,7 +390,7 @@ Anna.,Main,TKO261021,Elective,"Senior AI","Event Master",2026-07-06,10:00,12:00,
 "Arian Xie",Main,TKO230612,Regular,Exploration,EX-APP-1,2026-12-14,17:00,18:30,90,"Mr Singh",,0,0,,
 "Arian Xie",Main,TKO230612,Regular,Exploration,EX-APP-1,2026-12-21,17:00,18:30,90,"Mr Singh",,0,0,,
 "Arian Xie",Main,TKO230612,Regular,Exploration,EX-APP-1,2026-12-28,17:00,18:30,90,"Mr Singh",,0,0,,
-"Arnold Lam",Main,TKO240660,Elective,"3D Printing","Ch.05 Rocket to Mars",2026-07-07,10:00,12:00,120,"Miss Marjorie",,665,665,R-1-003427,
+"Arnold Lam",Main,TKO240660,Elective,"3D Printing","Ch.05 Rocket to Mars",2026-07-07,10:00,12:00,120,"Miss Marjorie",Present,665,665,R-1-003427,
 "Arnold Lam",Main,TKO240660,Elective,"Senior AI","Little Entrepreneur",2026-07-09,14:00,16:00,120,"Mr Sahat",,665,665,R-1-003427,
 "Arnold Lam",Main,TKO240660,Elective,"3D Printing","Ch.12 The High-Speed Race Car",2026-07-14,10:00,12:00,120,"Mr Sahat",,665,665,R-1-003427,
 "Arnold Lam",Main,TKO240660,Elective,"Senior AI",Story-making,2026-07-16,10:00,12:00,120,"Mr Sahat",,665,665,R-1-003427,
@@ -648,6 +648,7 @@ Artemis,Main,TKO260957,Others,Event,,2026-01-17,11:30,12:30,60,"Mr. Michael",Pre
 "Boris Yuen",Main,TKO250880,Regular,Discovery,DI-STR,2026-12-21,16:00,17:00,60,"Mr Singh",,0,0,,
 "Boris Yuen",Main,TKO250880,Regular,Discovery,DI-STR,2026-12-28,16:00,17:00,60,"Mr Singh",,0,0,,
 "Brendan Yeung",Main,TKO261034,Elective,"3D Printing","Ch.05 Rocket to Mars",2026-07-04,10:00,12:00,120,"Mr Berat",Present,776,776,R-1-003442,
+"Brendan Yeung",Main,TKO261034,Elective,"3D Printing","Ch.12 The High-Speed Race Car",2026-07-08,10:00,12:00,120,"Mr Singh",,656,0,,
 "Caden Lee",Main,TKO250912,Regular,Exploration,EX-OPER,2026-01-02,10:00,11:30,90,"Mr Marco",Present,523.3,523.3,R-1-003024,"Single From: 02/01 Fri 15:00"
 "Caden Lee",Main,TKO250912,Regular,Exploration,EX-OPER,2026-01-02,15:00,16:30,90,"Mr. Michael",Leave,0,0,R-1-003024,"Make Up To: 02/01 Fri 10:00"
 "Caden Lee",Main,TKO250912,Regular,Exploration,EX-OPER,2026-01-09,15:00,16:30,90,"Mr Marco",Present,523.3,523.3,R-1-003024,
@@ -896,7 +897,7 @@ Artemis,Main,TKO260957,Others,Event,,2026-01-17,11:30,12:30,60,"Mr. Michael",Pre
 "Chily Yip",Main,TKO240757,Regular,Innovation,IN-APP-2,2026-06-16,16:00,17:30,90,"Miss Marjorie",Leave,540,540,R-1-003293,
 "Chily Yip",Main,TKO240757,Regular,Innovation,IN-APP-2,2026-06-23,16:00,17:30,90,"Mr. Michael",Present,540,540,R-1-003293,
 "Chily Yip",Main,TKO240757,Regular,Innovation,IN-APP-2,2026-06-30,16:00,17:30,90,"Mr. Michael",Present,540,540,R-1-003293,
-"Chily Yip",Main,TKO240757,Regular,Innovation,IN-APP-2,2026-07-07,16:00,17:30,90,"Mr Sahat",,540,540,R-1-003293,
+"Chily Yip",Main,TKO240757,Regular,Innovation,IN-APP-2,2026-07-07,16:00,17:30,90,"Mr Bryan",Present,540,540,R-1-003293,
 "Chily Yip",Main,TKO240757,Regular,Innovation,IN-APP-2,2026-07-14,16:00,17:30,90,"Mr. Michael",,540,540,R-1-003293,
 "Chily Yip",Main,TKO240757,Regular,Innovation,IN-ARR,2026-07-16,16:30,18:00,90,"Mr Singh",,540,540,R-1-003112,"Single From: 03/02 Tue 16:00"
 "Chily Yip",Main,TKO240757,Regular,Innovation,IN-LOOP,2026-07-17,16:30,18:00,90,"Mr Singh",,540,540,R-1-003112,"Single From: 17/03 Tue 16:30"
@@ -933,7 +934,7 @@ Artemis,Main,TKO260957,Others,Event,,2026-01-17,11:30,12:30,60,"Mr. Michael",Pre
 "Chun Yu Chan",Main,TKO261011,Regular,Exploration,EX-SEQ,2026-06-29,17:00,18:30,90,"Mr Singh",Present,540,540,R-1-003407,
 "Chun Yu Chan",Main,TKO261011,Regular,Exploration,EX-SEQ,2026-06-30,17:30,19:00,90,"Mr Bryan",Present,540,540,R-1-003407,
 "Chun Yu Chan",Main,TKO261011,Regular,Exploration,EX-SEQ,2026-07-02,10:00,11:30,90,"Mr Sahat",Present,540,540,R-1-003407,
-"Chun Yu Chan",Main,TKO261011,Regular,Exploration,EX-SEQ,2026-07-07,17:30,19:00,90,"Mr Bryan",,540,540,R-1-003407,
+"Chun Yu Chan",Main,TKO261011,Regular,Exploration,EX-SEQ,2026-07-07,17:30,19:00,90,"Mr Bryan",Present,540,540,R-1-003407,
 "Chun Yu Chan",Main,TKO261011,Regular,Exploration,EX-SEQ,2026-07-09,17:00,18:30,90,"Mr Sahat",,540,540,R-1-003407,
 "Chun Yu Chan",Main,TKO261011,Regular,Exploration,EX-SEQ,2026-07-13,17:00,18:30,90,"Mr Sahat",Leave,0,0,R-1-003407,"Make Up To: 13/07 Mon 17:00"
 "Chun Yu Chan",Main,TKO261011,Regular,Exploration,EX-SEQ,2026-07-13,17:00,18:30,90,"Mr Sahat",,540,540,R-1-003407,"Single From: 13/07 Mon 17:00"
@@ -1143,6 +1144,7 @@ Daniel,Main,TKO261024,Elective,"3D Printing","Ch.02 My Dream Treehouse",2026-07-
 "Elena Chan",Main,TKO240746,Elective,"Senior AI","Comic Creator",2026-08-11,14:00,16:00,120,,,665,665,R-1-003389,
 "Elena Chan",Main,TKO240746,Elective,Roblox,"Hide & seek",2026-08-12,12:00,14:00,120,,,665,665,R-1-003389,
 "Enzo Chan",Main,TKO261027,JurassiCode,Orange,,2026-06-30,18:00,19:00,60,"Mr. Michael",Present,0,0,R-1-003419,
+"Enzo Chan",Main,TKO261027,Trial,Coding,Exploration,2026-07-09,14:00,15:00,60,"Mr. Michael",,200,0,,
 "Eren Koyuncu",Main,TKO250929,Regular,Discovery,DI-SEQ,2026-01-02,15:00,16:00,60,"Mr Singh",Leave,0,0,R-1-002972,"Make Up To: 26/02 Thu 15:00"
 "Eren Koyuncu",Main,TKO250929,Regular,Discovery,DI-SEQ,2026-01-09,15:00,16:00,60,"Mr Singh",Leave,0,0,R-1-002972,"Make Up To: 22/12 Mon 16:00"
 "Eren Koyuncu",Main,TKO250929,Regular,Discovery,DI-SEQ,2026-01-16,15:00,16:00,60,"Mr Singh",Present,356.6,356.6,R-1-002972,
@@ -1303,7 +1305,7 @@ Daniel,Main,TKO261024,Elective,"3D Printing","Ch.02 My Dream Treehouse",2026-07-
 "Gabriella Yip",Main,TKO250859,Regular,Exploration,EX-APP-1,2026-06-12,17:00,18:30,90,"Mr. Michael",Present,540,540,R-1-003312,
 "Gabriella Yip",Main,TKO250859,Regular,Exploration,EX-APP-1,2026-06-26,17:00,18:30,90,"Mr. Michael",Leave,540,540,R-1-003312,
 "Gabriella Yip",Main,TKO250859,Regular,Exploration,EX-APP-1,2026-07-03,17:00,18:30,90,"Miss Nikki",Leave,540,540,R-1-003312,
-"Gabriella Yip",Main,TKO250859,Regular,Exploration,EX-SEQ,2026-07-07,10:00,11:30,90,"Mr Singh",,540,540,R-1-003312,"Single From: 10/07 Fri 17:00"
+"Gabriella Yip",Main,TKO250859,Regular,Exploration,EX-SEQ,2026-07-07,10:00,11:30,90,"Mr Singh",Present,540,540,R-1-003312,"Single From: 10/07 Fri 17:00"
 "Gabriella Yip",Main,TKO250859,Regular,Exploration,EX-APP-1,2026-07-10,17:00,18:30,90,"Mr. Michael",Leave,0,0,R-1-003312,"Make Up To: 07/07 Tue 10:00"
 "Gabriella Yip",Main,TKO250859,Regular,Exploration,EX-SEQ,2026-07-14,10:00,11:30,90,"Mr. Michael",,540,540,R-1-003312,"Single From: 17/07 Fri 17:00"
 "Gabriella Yip",Main,TKO250859,Regular,Exploration,EX-APP-1,2026-07-17,17:00,18:30,90,"Miss Nikki",Leave,0,0,R-1-003312,"Make Up To: 14/07 Tue 10:00"
@@ -1352,7 +1354,7 @@ Gareth,Main,TKO240748,Elective,"Spike Essential","Carnival - Edge & Pinball",202
 "Hannah Hsu",Main,TKO260992,Regular,Discovery,DI-VAR,2026-06-23,10:00,11:00,60,"Miss Nikki",Present,323.3,323.3,R-1-003251,
 "Hannah Hsu",Main,TKO260992,Regular,Discovery,DI-VAR,2026-06-30,10:00,11:00,60,"Miss Nikki",Present,323.3,323.3,R-1-003251,
 "Hannah Hsu",Main,TKO260992,Others,Training,,2026-07-06,10:00,11:00,60,"Miss Marjorie",Present,544,544,R-1-003430,
-"Hannah Hsu",Main,TKO260992,Regular,Discovery,DI-VAR,2026-07-07,10:00,11:00,60,"Miss Janice",,323.3,323.3,R-1-003251,
+"Hannah Hsu",Main,TKO260992,Regular,Discovery,DI-VAR,2026-07-07,10:00,11:00,60,"Miss Janice",Present,323.3,323.3,R-1-003251,
 "Hannah Hsu",Main,TKO260992,Others,Training,,2026-07-08,10:00,11:00,60,"Miss Marjorie",,544,544,R-1-003430,
 "Hannah Hsu",Main,TKO260992,Others,Training,,2026-07-09,14:00,15:00,60,"Miss Marjorie",,544,544,R-1-003430,
 "Hannah Hsu",Main,TKO260992,Regular,Discovery,DI-SEQ,2026-07-14,10:00,11:00,60,"Miss Janice",,0,0,R-1-003251,"Make Up To: 15/07 Wed 14:15"
@@ -1384,8 +1386,10 @@ Gareth,Main,TKO240748,Elective,"Spike Essential","Carnival - Edge & Pinball",202
 "Hannah Hsu",Main,TKO260992,Regular,Discovery,DI-SEQ,2026-12-22,10:00,11:00,60,"Miss Janice",,0,0,,
 "Hannah Hsu",Main,TKO260992,Regular,Discovery,DI-SEQ,2026-12-29,10:00,11:00,60,"Miss Janice",,0,0,,
 "Hannah Xie",Main,TKO230570,Elective,"3D Printing","Ch.09 Pencil Holder",2026-07-06,10:00,12:00,120,"Mr Berat",Present,680,680,R-1-003436,
-"Hannah Xie",Main,TKO230570,Elective,"3D Printing","Ch.12 The High-Speed Race Car",2026-07-08,10:00,12:00,120,"Mr Singh",,680,680,R-1-003436,
+"Hannah Xie",Main,TKO230570,Elective,"3D Printing","Ch.12 The High-Speed Race Car",2026-07-08,10:00,12:00,120,"Mr Singh",Leave,0,0,R-1-003436,"Make Up To: 08/07 Wed 14:00"
+"Hannah Xie",Main,TKO230570,Elective,Minecraft,"The Overworld Connection",2026-07-08,14:00,16:00,120,"Miss Nikki",,680,680,R-1-003436,"Single From: 08/07 Wed 10:00"
 "Hannah Yeung",Main,TKO261035,Elective,"Lego Wedo2.0",Carousel,2026-07-04,10:00,12:00,120,"Miss Nikki",Present,776,776,R-1-003443,
+"Hannah Yeung",Main,TKO261035,Elective,"Lego Wedo2.0",Carousel,2026-07-08,10:00,12:00,120,"Mr Bryan",,656,0,,
 "Harper Lun",Main,TKO261006,Elective,"3D Printing","Ch.12 The High-Speed Race Car",2026-07-05,13:00,15:00,120,"Mr Sahat",Present,625.6,625.6,R-1-003409,
 "Harry Chow",Main,TKO220430,Regular,Exploration,EX-WEB-2,2026-01-03,9:00,10:30,90,"Mr. Kelvin",Leave,0,0,R-1-002974,"Make Up To: 15/01 Thu 14:00"
 "Harry Chow",Main,TKO220430,Regular,Exploration,EX-WEB-2,2026-01-06,14:00,15:30,90,"Mr. Kelvin",Present,523.3,523.3,R-1-002974,"Single From: 20/12 Sat 09:00"
@@ -1443,6 +1447,7 @@ Gareth,Main,TKO240748,Elective,"Spike Essential","Carnival - Edge & Pinball",202
 "Harry Chow",Main,TKO220430,Regular,Innovation,IN-APP-1,2026-12-05,9:00,10:30,90,Mr.Luqman,,0,0,,
 "Harry Chow",Main,TKO220430,Regular,Innovation,IN-APP-1,2026-12-12,9:00,10:30,90,Mr.Luqman,,0,0,,
 "Harry Chow",Main,TKO220430,Regular,Innovation,IN-APP-1,2026-12-19,9:00,10:30,90,Mr.Luqman,,0,0,,
+Harvan,Main,TKO261042,Trial,Coding,Discovery,2026-07-08,17:00,18:00,60,"Miss Janice",,200,0,,
 Harvey,Main,TKO260971,Trial,Coding,Discovery,2026-03-14,9:30,10:30,60,"Mr. Michael",Present,200,200,R-1-003198,
 "Hayden Law",Main,TKO260989,Regular,PreCoding,PreC-SEQ-1,2026-04-09,11:00,12:00,60,"Mr. Michael",Present,439.1,439.1,R-1-003237,
 "Hayden Law",Main,TKO260989,Regular,PreCoding,PreC-SEQ-1,2026-04-16,11:00,12:00,60,"Mr. Michael",Present,439.1,439.1,R-1-003237,
@@ -1482,8 +1487,8 @@ Harvey,Main,TKO260971,Trial,Coding,Discovery,2026-03-14,9:30,10:30,60,"Mr. Micha
 "Hayden Law",Main,TKO260989,Regular,PreCoding,PreC-SEQ-1,2026-12-16,11:00,12:00,60,"Mr Bryan",,0,0,,
 "Hayden Law",Main,TKO260989,Regular,PreCoding,PreC-SEQ-1,2026-12-23,11:00,12:00,60,"Mr Bryan",,0,0,,
 "Hayden Law",Main,TKO260989,Regular,PreCoding,PreC-SEQ-1,2026-12-30,11:00,12:00,60,"Mr Bryan",,0,0,,
-"Hayden Yung",Main,TKO261010,Elective,"3D Printing","Ch.05 Rocket to Mars",2026-07-07,10:00,12:00,120,"Miss Marjorie",,616.6,616.6,R-1-003351,
-"Hayden Yung",Main,TKO261010,Elective,"Senior AI","Event Master",2026-07-07,14:00,16:00,120,"Mr Sahat",,616.6,616.6,R-1-003351,
+"Hayden Yung",Main,TKO261010,Elective,"3D Printing","Ch.05 Rocket to Mars",2026-07-07,10:00,12:00,120,"Miss Marjorie",Present,616.6,616.6,R-1-003351,
+"Hayden Yung",Main,TKO261010,Elective,"Senior AI","Event Master",2026-07-07,14:00,16:00,120,"Miss Nikki",Present,616.6,616.6,R-1-003351,
 "Hayden Yung",Main,TKO261010,Elective,"3D Printing","Ch.12 The High-Speed Race Car",2026-07-08,10:00,12:00,120,"Mr Singh",,616.6,616.6,R-1-003351,
 "Hayden Yung",Main,TKO261010,Elective,"3D Printing","Ch.09 Personalized Bookmarks",2026-07-09,10:00,12:00,120,"Mr Singh",,616.6,616.6,R-1-003351,
 "Hayden Yung",Main,TKO261010,Elective,"Senior AI","Little Entrepreneur",2026-07-09,14:00,16:00,120,"Mr Sahat",,616.6,616.6,R-1-003351,
@@ -1629,7 +1634,7 @@ Huey,Main,TKO261016,Elective,Minecraft,"Fast Lanes & Deep Seas",2026-08-18,15:30
 "Jake Ching",Main,TKO230649,Elective,"3D Printing","Ch.03 Build-a-Pet",2026-04-02,10:00,12:00,120,"Miss Nikki",Present,800,800,R-1-003235,
 "Jake Ching",Main,TKO230649,Elective,Minecraft,"The Minecraft World",2026-04-10,12:00,14:00,120,"Mr Singh",Present,580,580,R-1-003235,
 "Jake Ching",Main,TKO230649,Elective,"3D Printing","Ch.09 Pencil Holder",2026-07-06,10:00,12:00,120,"Mr Berat",Present,580,580,R-1-003235,
-"Jake Ching",Main,TKO230649,Elective,Roblox,"Tower climbing",2026-07-07,12:00,14:00,120,"Mr Singh",,580,580,R-1-003235,
+"Jake Ching",Main,TKO230649,Elective,Roblox,"Tower climbing",2026-07-07,12:00,14:00,120,"Mr Singh",Present,580,580,R-1-003235,
 "Jake Ching",Main,TKO230649,Elective,Minecraft,"Survival in Minecraft",2026-07-10,12:00,14:00,120,"Mr. Michael",,580,580,R-1-003235,
 "Jake Ching",Main,TKO230649,Elective,Roblox,"Hide & seek",2026-07-23,12:00,14:00,120,,,580,580,R-1-003235,"Single From: 28/07 Tue 12:00"
 "Jake Ching",Main,TKO230649,Elective,Minecraft,"Survival in Minecraft",2026-07-28,12:00,14:00,120,"Mr. Michael",,0,0,R-1-003235,"Make Up To: 23/07 Thu 12:00"
@@ -1880,7 +1885,7 @@ JJ,Main,TKO261023,JurassiCode,Orange,,2026-06-18,17:00,17:55,55,"Miss Janice",,0
 "Joie Yip",Main,TKO260988,Regular,Innovation,IN-OPER,2026-06-16,16:30,18:00,90,"Miss Janice",Present,523.3,523.3,R-1-003274,
 "Joie Yip",Main,TKO260988,Regular,Innovation,IN-OPER,2026-06-23,16:30,18:00,90,"Miss Janice",Present,523.3,523.3,R-1-003274,
 "Joie Yip",Main,TKO260988,Regular,Innovation,IN-OPER,2026-06-30,16:30,18:00,90,"Miss Janice",Present,523.3,523.3,R-1-003274,
-"Joie Yip",Main,TKO260988,Regular,Innovation,IN-OPER,2026-07-07,16:30,18:00,90,"Miss Janice",,523.3,523.3,R-1-003274,
+"Joie Yip",Main,TKO260988,Regular,Innovation,IN-OPER,2026-07-07,16:30,18:00,90,"Miss Janice",Present,523.3,523.3,R-1-003274,
 "Joie Yip",Main,TKO260988,Regular,Innovation,IN-OPER,2026-07-14,16:30,18:00,90,"Miss Janice",,523.3,523.3,R-1-003274,
 "Joie Yip",Main,TKO260988,Regular,Innovation,IN-OPER,2026-07-21,16:30,18:00,90,"Miss Janice",,523.3,523.3,R-1-003274,
 "Joie Yip",Main,TKO260988,Regular,Innovation,IN-OPER,2026-07-28,16:30,18:00,90,"Miss Janice",,523.7,523.7,R-1-003274,
@@ -2487,6 +2492,7 @@ Mishka,Main,TKO250868,Regular,Discovery,DI-STR,2026-12-28,16:00,17:00,60,"Mr Sin
 "Myles Cheung",Main,TKO260974,Regular,Exploration,EX-APP-1,2026-08-05,16:00,17:30,90,"Mr Singh",,540,540,R-1-003356,
 "Myles Cheung",Main,TKO260974,Regular,Exploration,EX-APP-1,2026-08-12,16:00,17:30,90,"Mr Singh",,540,540,R-1-003356,
 "Nora Yang",Main,TKO230584,Elective,"Spike Essential","Carnival - Edge & Pinball",2026-01-02,10:00,12:00,120,"Mr. Michael",Present,776,776,R-1-003055,
+"Nora Yang",Main,TKO230584,Elective,"Lego Wedo2.0","Rescue Helicopter",2026-07-07,10:00,12:00,120,"Miss Nikki",Present,700,0,,
 "Ondrey Tse",Main,TKO240805,Regular,Exploration,EX-LOOP,2026-01-05,17:00,18:30,90,"Mr. Kelvin",Present,523.3,523.3,R-1-003061,
 "Ondrey Tse",Main,TKO240805,Regular,Exploration,EX-LOOP,2026-01-12,17:00,18:30,90,"Mr. Kelvin",Present,523.3,523.3,R-1-003061,
 "Ondrey Tse",Main,TKO240805,Regular,Exploration,EX-OPER,2026-01-19,17:00,18:30,90,"Mr. Kelvin",Present,523.3,523.3,R-1-003061,
@@ -2575,7 +2581,8 @@ Mishka,Main,TKO250868,Regular,Discovery,DI-STR,2026-12-28,16:00,17:00,60,"Mr Sin
 "Optimus Lau",Main,TKO220500,Regular,Innovation,IN-APP-1,2026-06-20,9:00,10:30,90,"Mr Sahat",Present,506.6,506.6,R-1-003271,
 "Optimus Lau",Main,TKO220500,Elective,Roblox,"Tower climbing",2026-06-26,12:00,14:00,120,"Miss Nikki",Present,616.6,616.6,R-1-003410,
 "Optimus Lau",Main,TKO220500,Regular,Innovation,IN-APP-1,2026-06-27,9:00,10:30,90,"Mr Sahat",Present,506.6,506.6,R-1-003271,
-"Optimus Lau",Main,TKO220500,Regular,Innovation,IN-APP-1,2026-07-04,9:00,10:30,90,"Mr Sahat",Leave,506.6,506.6,R-1-003271,
+"Optimus Lau",Main,TKO220500,Regular,Innovation,IN-APP-1,2026-07-04,9:00,10:30,90,"Mr Sahat",Leave,0,0,R-1-003271,"Make Up To: 09/07 Thu 10:00"
+"Optimus Lau",Main,TKO220500,Regular,Innovation,IN-APP-1,2026-07-09,10:00,11:30,90,"Mr Sahat",,506.6,506.6,R-1-003271,"Single From: 04/07 Sat 09:00"
 "Optimus Lau",Main,TKO220500,Elective,"Spike Prime","Robot Arm",2026-07-10,10:00,12:00,120,"Mr. Michael",,616.6,616.6,R-1-003410,
 "Optimus Lau",Main,TKO220500,Regular,Innovation,IN-APP-1,2026-07-11,9:00,10:30,90,"Mr Sahat",,506.6,506.6,R-1-003271,
 "Optimus Lau",Main,TKO220500,Elective,Roblox,"Football game",2026-07-11,12:00,14:00,120,"Miss Nikki",,616.6,616.6,R-1-003410,
@@ -2653,7 +2660,7 @@ Owen,Main,TKO261019,Elective,Roblox,"Football game",2026-07-29,12:00,14:00,120,,
 "Quinton Ho",Main,TKO230567,Regular,Innovation,IN-APP-2,2026-06-16,16:00,17:30,90,"Miss Marjorie",Leave,540,540,R-1-003291,
 "Quinton Ho",Main,TKO230567,Regular,Innovation,IN-APP-2,2026-06-23,16:00,17:30,90,"Mr. Michael",Present,540,540,R-1-003291,
 "Quinton Ho",Main,TKO230567,Regular,Innovation,IN-APP-2,2026-06-30,16:00,17:30,90,"Mr. Michael",Present,540,540,R-1-003291,
-"Quinton Ho",Main,TKO230567,Regular,Innovation,IN-APP-2,2026-07-07,16:00,17:30,90,"Mr Sahat",Leave,540,540,R-1-003291,
+"Quinton Ho",Main,TKO230567,Regular,Innovation,IN-APP-2,2026-07-07,16:00,17:30,90,"Mr Bryan",Leave,540,540,R-1-003291,
 "Quinton Ho",Main,TKO230567,Regular,Innovation,IN-APP-2,2026-07-14,16:00,17:30,90,"Mr. Michael",,540,540,R-1-003291,
 "Quinton Ho",Main,TKO230567,Regular,Innovation,IN-APP-2,2026-07-21,16:00,17:30,90,"Mr. Michael",,540,540,R-1-003291,
 "Quinton Ho",Main,TKO230567,Regular,Innovation,IN-APP-2,2026-07-28,16:00,17:30,90,"Mr. Michael",,540,540,R-1-003291,
@@ -2700,7 +2707,7 @@ Owen,Main,TKO261019,Elective,Roblox,"Football game",2026-07-29,12:00,14:00,120,,
 "Roger Ching",Main,TKO230648,Elective,"3D Printing","Ch.03 Build-a-Pet",2026-04-02,10:00,12:00,120,"Miss Nikki",Present,800,800,R-1-003234,
 "Roger Ching",Main,TKO230648,Elective,Minecraft,"The Minecraft World",2026-04-10,12:00,14:00,120,"Mr Singh",Present,580,580,R-1-003234,
 "Roger Ching",Main,TKO230648,Elective,"3D Printing","Ch.09 Pencil Holder",2026-07-06,10:00,12:00,120,"Mr Berat",Present,580,580,R-1-003234,"Single From: 17/07 Fri 12:00"
-"Roger Ching",Main,TKO230648,Elective,Roblox,"Tower climbing",2026-07-07,12:00,14:00,120,"Mr Singh",,580,580,R-1-003234,
+"Roger Ching",Main,TKO230648,Elective,Roblox,"Tower climbing",2026-07-07,12:00,14:00,120,"Mr Singh",Present,580,580,R-1-003234,
 "Roger Ching",Main,TKO230648,Elective,Minecraft,"Survival in Minecraft",2026-07-10,12:00,14:00,120,"Mr. Michael",,580,580,R-1-003234,
 "Roger Ching",Main,TKO230648,Elective,Minecraft,"The Overworld Connection",2026-07-17,12:00,14:00,120,"Mr. Michael",Other,0,0,R-1-003234,"Make Up To: 06/07 Mon 10:00"
 "Roger Ching",Main,TKO230648,Elective,Roblox,"Hide & seek",2026-07-23,12:00,14:00,120,,,580,580,R-1-003234,
@@ -2763,7 +2770,7 @@ Owen,Main,TKO261019,Elective,Roblox,"Football game",2026-07-29,12:00,14:00,120,,
 "Sam Kwok",Main,TKO200064,Elective,"Senior AI","Study Buddies",2026-08-07,10:00,12:00,120,,,680,680,R-1-003403,
 "Sam Kwok",Main,TKO200064,Elective,"Senior AI","Little Entrepreneur",2026-08-14,10:00,12:00,120,,,680,680,R-1-003403,
 Samuel,Main,TKO261037,Elective,Roblox,"Tower climbing",2026-07-06,11:00,13:00,120,"Miss Nikki",Present,680,680,R-1-003439,
-Samuel,Main,TKO261037,Elective,Roblox,"Temple runner",2026-07-07,11:00,13:00,120,"Mr Berat",,680,680,R-1-003439,
+Samuel,Main,TKO261037,Elective,Roblox,"Temple runner",2026-07-07,11:00,13:00,120,"Mr Berat",Present,680,680,R-1-003439,
 Samuel,Main,TKO261037,Elective,Roblox,"Egg hunting",2026-07-08,11:00,13:00,120,"Mr Sahat",,680,680,R-1-003439,
 Samuel,Main,TKO261037,Elective,Roblox,"Football game",2026-07-09,11:00,13:00,120,"Miss Nikki",,680,680,R-1-003439,
 Samuel,Main,TKO261037,Elective,Roblox,"Mines avoiding",2026-07-10,11:00,13:00,120,"Mr Berat",,680,680,R-1-003439,
@@ -2785,9 +2792,9 @@ Samuel,Main,TKO261037,Elective,Roblox,"Mines avoiding",2026-07-10,11:00,13:00,12
 "Savannah Tan",Main,TKO260975,Regular,Coding,"Personal Coach",2026-05-30,10:00,11:00,60,"Miss Carol",Present,502.5,502.5,R-1-003207,
 "Savannah Tan",Main,TKO260975,Regular,Coding,"Personal Coach",2026-06-06,10:00,11:00,60,"Miss Nikki",Leave,502.5,502.5,R-1-003207,
 "Savannah Tan",Main,TKO260975,Regular,Coding,"Personal Coach",2026-06-13,10:00,11:00,60,"Miss Nikki",Leave,670,0,,
-Selena,Main,TKO261029,Trial,Coding,Innovation,2026-07-07,18:00,19:00,60,"Miss Janice",,200,200,R-1-003433,
+Selena,Main,TKO261029,Trial,Coding,Innovation,2026-07-07,18:00,19:00,60,"Miss Janice",Present,200,200,R-1-003433,
 Serene,Main,TKO261038,Elective,Roblox,"Tower climbing",2026-07-06,11:00,13:00,120,"Miss Nikki",Present,680,680,R-1-003440,
-Serene,Main,TKO261038,Elective,Roblox,"Temple runner",2026-07-07,11:00,13:00,120,"Mr Berat",,680,680,R-1-003440,
+Serene,Main,TKO261038,Elective,Roblox,"Temple runner",2026-07-07,11:00,13:00,120,"Mr Berat",Present,680,680,R-1-003440,
 Serene,Main,TKO261038,Elective,Roblox,"Egg hunting",2026-07-08,11:00,13:00,120,"Mr Sahat",,680,680,R-1-003440,
 Serene,Main,TKO261038,Elective,Roblox,"Football game",2026-07-09,11:00,13:00,120,"Miss Nikki",,680,680,R-1-003440,
 Serene,Main,TKO261038,Elective,Roblox,"Mines avoiding",2026-07-10,11:00,13:00,120,"Mr Berat",,680,680,R-1-003440,
@@ -2797,7 +2804,7 @@ Serene,Main,TKO261038,Elective,Roblox,"Mines avoiding",2026-07-10,11:00,13:00,12
 "Sherry Sze Ling",Main,TKO260963,Trial,Coding,Discovery,2026-01-29,16:00,16:20,20,"Miss Janice",Present,0,0,R-1-003128,
 "Simona Lee",Main,TKO261039,Elective,"3D Printing","Ch. 07 Pencil Holder",2026-07-06,13:00,15:00,120,"Mr Singh",Present,800,800,R-1-003441,
 Sophie,Main,TKO261036,Elective,Roblox,"Tower climbing",2026-07-06,11:00,13:00,120,"Miss Nikki",Present,680,680,R-1-003438,
-Sophie,Main,TKO261036,Elective,Roblox,"Temple runner",2026-07-07,11:00,13:00,120,"Mr Berat",,680,680,R-1-003438,
+Sophie,Main,TKO261036,Elective,Roblox,"Temple runner",2026-07-07,11:00,13:00,120,"Mr Berat",Present,680,680,R-1-003438,
 Sophie,Main,TKO261036,Elective,Roblox,"Egg hunting",2026-07-08,11:00,13:00,120,"Mr Sahat",,680,680,R-1-003438,
 Sophie,Main,TKO261036,Elective,Roblox,"Football game",2026-07-09,11:00,13:00,120,"Miss Nikki",,680,680,R-1-003438,
 Sophie,Main,TKO261036,Elective,Roblox,"Mines avoiding",2026-07-10,11:00,13:00,120,"Mr Berat",,680,680,R-1-003438,
@@ -2856,7 +2863,7 @@ Sophie,Main,TKO261036,Elective,Roblox,"Mines avoiding",2026-07-10,11:00,13:00,12
 "Stella Zhang",Main,TKO230633,Regular,Exploration,EX-ARR,2026-12-05,10:30,12:00,90,"Mr. Michael",,0,0,,
 "Stella Zhang",Main,TKO230633,Regular,Exploration,EX-ARR,2026-12-12,10:30,12:00,90,"Mr. Michael",,0,0,,
 "Stella Zhang",Main,TKO230633,Regular,Exploration,EX-ARR,2026-12-19,10:30,12:00,90,"Mr. Michael",,0,0,,
-Stella.,Main,TKO261028,Trial,Coding,Innovation,2026-07-07,18:00,19:00,60,"Miss Janice",,200,200,R-1-003434,
+Stella.,Main,TKO261028,Trial,Coding,Innovation,2026-07-07,18:00,19:00,60,"Miss Janice",Present,200,200,R-1-003434,
 "Sun Zhang",Main,TKO230619,Regular,Exploration,EX-LOOP,2026-01-06,16:30,18:00,90,"Miss Marjorie",Present,523.3,523.3,R-1-003012,
 "Sun Zhang",Main,TKO230619,Regular,Exploration,EX-LOOP,2026-01-10,10:30,12:00,90,"Mr. Kelvin",Present,523.3,523.3,R-1-003012,"Single From: 30/12 Tue 16:30"
 "Sun Zhang",Main,TKO230619,Regular,Exploration,EX-LOOP,2026-01-13,16:30,18:00,90,"Mr Marco",Present,523.3,523.3,R-1-003012,
@@ -2963,6 +2970,7 @@ Stella.,Main,TKO261028,Trial,Coding,Innovation,2026-07-07,18:00,19:00,60,"Miss J
 "Theodore Law",Main,TKO260959,Elective,"Junior Science Lab","Electricity conduction",2026-06-29,12:00,14:00,120,"Mr Singh",Present,616.6,616.6,R-1-003399,
 "Theodore Law",Main,TKO260959,Elective,"3D Printing","Ch.12 The High-Speed Race Car",2026-07-03,12:00,14:00,120,"Mr Singh",Present,616.6,616.6,R-1-003399,
 "Theodore Law",Main,TKO260959,Elective,Roblox,"Mines avoiding",2026-07-06,14:00,16:00,120,"Mr Berat",Present,616.6,616.6,R-1-003399,
+"Theodore Law",Main,TKO260959,Elective,"Junior Science Lab","Color magic",2026-07-08,12:00,14:00,120,"Miss Nikki",,616.6,616.6,R-1-003399,
 "Theodore Li",Main,TKO240674,Regular,Discovery,DI-SEQ,2026-01-05,16:00,17:00,60,"Miss Janice",Leave,373.3,373.3,R-1-003080,
 "Theodore Li",Main,TKO240674,Regular,Discovery,DI-SEQ,2026-01-12,16:00,17:00,60,"Mr Singh",Present,373.3,373.3,R-1-003080,
 "Theodore Li",Main,TKO240674,Regular,Discovery,DI-SEQ,2026-01-19,16:00,17:00,60,"Miss Janice,Mr.Luqman",Present,373.3,373.3,R-1-003080,
@@ -3076,7 +3084,9 @@ Torres,Main,TKO261018,Elective,Roblox,"Hide & seek",2026-07-13,12:00,14:00,120,"
 Torres,Main,TKO261018,Elective,Roblox,"Hide & seek",2026-07-15,12:00,14:00,120,"Mr Singh",,630,630,R-1-003394,
 Torres,Main,TKO261018,Elective,Roblox,"Football game",2026-07-29,12:00,14:00,120,,,630,630,R-1-003394,
 "Toyi To",Main,TKO260978,Trial,Coding,Exploration,2026-03-12,15:00,16:00,60,"Miss Janice",Present,200,200,R-1-003194,
+Travor,Main,TKO261043,Elective,"3D Printing","Ch.12 The High-Speed Race Car",2026-07-10,17:00,19:00,120,"Miss Marjorie",,800,0,,
 "Vincent Yang",Main,TKO210310,Elective,"Spike Essential","Carnival - Edge & Pinball",2026-01-02,10:00,12:00,120,"Mr. Michael",Present,776,776,R-1-003056,
+"Vincent Yang",Main,TKO210310,Elective,"Lego Wedo2.0","Rescue Helicopter",2026-07-07,10:00,12:00,120,"Miss Nikki",Present,700,0,,
 "Walter Lam",Main,TKO260995,Others,Training,,2026-04-25,14:00,16:00,120,"Mr. Michael",Present,1340,1340,"R-1-003261, R-1-003262, R-1-003263",
 "Walter Lam",Main,TKO260995,Others,Training,,2026-04-30,17:00,19:00,120,"Mr. Michael",Present,1340,1340,"R-1-003261, R-1-003262, R-1-003263",
 "Walter Lam",Main,TKO260995,Others,Training,,2026-07-02,14:30,16:00,90,"Miss Marjorie",Present,1020,1020,R-1-003437,
